@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import FeaturedCollection from "@/components/FeaturedCollection";
-import FeaturedCollectionTest from "@/components/FeaturedCollectionTest";
+// import FeaturedCollectionTest from "@/components/FeaturedCollectionTest";
 import ShopByCategory from "@/components/ShopByCategory";
 import About from "@/components/About";
 import WhyChooseUs from "@/components/WhyChooseUs";
@@ -15,7 +15,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <FeaturedCollection />
-      <FeaturedCollectionTest />
+      {/* <FeaturedCollectionTest /> */}
       <ShopByCategory />
       <About />
       <WhyChooseUs />
