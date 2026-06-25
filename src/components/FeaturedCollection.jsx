@@ -64,12 +64,14 @@ export default function FeaturedCollection() {
           {PRODUCTS.map((p, i) => (
             <motion.div
               key={p.name}
+              tabIndex={0}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="group bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:border-[#00ff3c]/40 hover:shadow-[0_20px_50px_rgba(0,255,60,0.15)] transition-all duration-300"
+              whileTap={{ scale: 0.96 }}
+              className="group bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:border-[#00ff3c]/40 hover:shadow-[0_20px_50px_rgba(0,255,60,0.15)] focus:border-[#00ff3c]/40 focus:shadow-[0_20px_50px_rgba(0,255,60,0.15)] active:border-[#00ff3c] active:shadow-[0_20px_50px_rgba(0,255,60,0.2)] active:bg-white/10 outline-none transition-all duration-300 cursor-pointer"
             >
               <div className="relative bg-[#111827] rounded-xl overflow-hidden mb-5 h-48 flex items-center justify-center">
                 <Image
@@ -77,7 +79,7 @@ export default function FeaturedCollection() {
                   alt={p.name}
                   width={240}
                   height={200}
-                  className="object-contain h-full w-auto transition-transform duration-500 group-hover:scale-110"
+                  className="object-contain h-full w-auto transition-transform duration-500 group-hover:scale-110 group-focus:scale-110"
                 />
               </div>
 
@@ -105,7 +107,7 @@ export default function FeaturedCollection() {
                 <span className="text-white font-extrabold text-lg">{p.price}</span>
               </div>
 
-              <button className="w-full mt-4 bg-white/5 border border-white/15 text-white text-sm font-semibold py-2.5 rounded-full hover:bg-[#00ff3c] hover:text-[#07111f] hover:border-[#00ff3c] transition-all duration-300">
+              <button className="w-full mt-4 bg-white/5 border border-white/15 text-white text-sm font-semibold py-2.5 rounded-full hover:bg-[#00ff3c] hover:text-[#07111f] hover:border-[#00ff3c] focus:bg-[#00ff3c] focus:text-[#07111f] active:bg-[#00ff3c] active:text-[#07111f] active:scale-95 outline-none transition-all duration-300">
                 View Details
               </button>
             </motion.div>
