@@ -202,7 +202,8 @@ export default function FeaturedCollection() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               whileHover={{ y: -8 }}
-              className="group relative flex flex-col bg-gradient-to-b from-white/[0.07] to-white/[0.02] backdrop-blur-md border border-white/10 rounded-2xl p-3.5 sm:p-5 hover:border-[#00ff3c]/40 hover:shadow-[0_20px_50px_rgba(0,255,60,0.15)] transition-all duration-300"
+              whileTap={{ scale: 0.96 }}
+              className="group relative flex flex-col bg-gradient-to-b from-white/[0.07] to-white/[0.02] backdrop-blur-md border border-white/10 rounded-2xl p-3.5 sm:p-5 hover:border-[#00ff3c]/40 hover:shadow-[0_20px_50px_rgba(0,255,60,0.15)] active:border-[#00ff3c]/60 active:bg-white/10 transition-all duration-300 cursor-pointer"
             >
               {/* rating badge */}
               <div className="absolute top-5 right-5 sm:top-7 sm:right-7 z-10 flex items-center gap-1 bg-[#07111f]/80 backdrop-blur-sm border border-white/10 rounded-full px-2 py-1">
@@ -232,7 +233,7 @@ export default function FeaturedCollection() {
                 <span className="text-white font-extrabold text-lg sm:text-xl">{p.price}</span>
               </div>
 
-              <button className="w-full flex items-center justify-center gap-1.5 bg-white/5 border border-white/15 text-white text-xs sm:text-sm font-semibold py-2.5 sm:py-3 rounded-full hover:bg-[#00ff3c] hover:text-[#07111f] hover:border-[#00ff3c] transition-all duration-300">
+              <button className="w-full flex items-center justify-center gap-1.5 bg-white/5 border border-white/15 text-white text-xs sm:text-sm font-semibold py-2.5 sm:py-3 rounded-full hover:bg-[#00ff3c] hover:text-[#07111f] hover:border-[#00ff3c] active:bg-[#00cc30] active:scale-95 transition-all duration-300">
                 View Details
                 <ArrowUpRight
                   size={14}
