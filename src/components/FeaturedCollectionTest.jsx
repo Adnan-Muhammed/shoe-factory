@@ -64,10 +64,10 @@ export default function FeaturedCollection() {
                     {PRODUCTS.map((p, i) => (
                         <motion.div
                             key={p.name}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: i % 2 === 0 ? -60 : 60, y: 30 }}
+                            whileInView={{ opacity: 1, x: 0, y: 0 }}
                             viewport={{ once: true, amount: 0.2 }}
-                            transition={{ duration: 0.5, delay: i * 0.1 }}
+                            transition={{ duration: 0.6, delay: 0.1, type: "spring", bounce: 0.3 }}
                             whileHover={{ y: -8, scale: 1.02 }}
                             whileTap={{ scale: 0.96 }}
                             className="group bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:border-[#00ff3c]/40 hover:shadow-[0_20px_50px_rgba(0,255,60,0.15)] active:border-[#00ff3c]/60 active:bg-white/10 transition-all duration-300 cursor-pointer"
