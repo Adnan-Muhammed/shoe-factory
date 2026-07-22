@@ -12,7 +12,7 @@ export default function AuthScreen() {
         <img
           src={logo.src}
           alt="Logo"
-          className="w-56 h-56 object-contain drop-shadow-2xl"
+          className="w-56 h-56 object-contain drop-shadow-2xl scale-150 mb-4"
         />
 
         {/* Main Text */}
