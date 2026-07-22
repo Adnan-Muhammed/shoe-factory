@@ -2,6 +2,7 @@
 
 // import React from "react";
 import logo from "@/assets/logo.png";
+// import logo from "@/logo.png";
 
 export default function AuthScreen() {
   return (
@@ -9,7 +10,7 @@ export default function AuthScreen() {
       <div className="w-full max-w-sm flex flex-col items-center justify-center px-6 text-center">
         {/* Logo */}
         <img
-          src={logo}
+          src={logo.src}
           alt="Logo"
           className="w-56 h-56 object-contain drop-shadow-2xl"
         />
