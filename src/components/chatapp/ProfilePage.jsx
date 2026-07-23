@@ -547,12 +547,12 @@ const ProfilePage = ({ isProfileMode = false, onSave, onLogout }) => {
   };
 
   return (
-    // h-[100dvh] & overflow-hidden വെച്ചതുകൊണ്ട് സ്ക്രീൻ ഒട്ടും സ്ക്രോൾ ആവില്ല
-    <div className="h-[100dvh] w-full flex items-center justify-center bg-gradient-to-b from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] px-5 overflow-hidden">
+    //// Because of `h-[100dvh]` and `overflow-hidden`, the screen won't scroll at all.
+<div className="h-[100dvh] w-full flex items-center justify-center bg-gradient-to-b from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] px-5 overflow-hidden">
       
       {/* 
-        MAIN FIX: ഈ ബോക്സിന് h-[630px] ഫിക്സഡ് ഹൈറ്റ് കൊടുത്തു. 
-        ഇനി ലോഗ്ഔട്ട് ബട്ടൺ വന്നാലും പോയാലും ഈ ബോക്സ് വലുതാവുകയോ ചെറുതാവുകയോ ചെയ്യില്ല! 
+        MAIN FIX: Assigned a fixed height of `h-[630px]` to this box.
+        Now, the box won't expand or shrink regardless of whether the logout button appears or disappears!
       */}
       <div className="w-full max-w-[360px] h-[630px] bg-white/90 backdrop-blur-sm rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] px-6 py-7 flex flex-col">
         
@@ -702,7 +702,7 @@ const ProfilePage = ({ isProfileMode = false, onSave, onLogout }) => {
                 <LogOut className="w-4 h-4" /> Log Out
               </button>
             ) : (
-               // Onboarding മോഡിൽ ലോഗ്ഔട്ട് ബട്ടണിന്റെ അതേ സൈസിലുള്ള ഒരു അദൃശ്യമായ സ്പേസ് കൊടുക്കുന്നു, അപ്പോൾ ബോക്സ് അനങ്ങില്ല.
+              // In onboarding mode, an invisible space the same size as the logout button is provided so that the box does not shift.
               <div className="h-[46px] w-full"></div> 
             )}
           </div>
