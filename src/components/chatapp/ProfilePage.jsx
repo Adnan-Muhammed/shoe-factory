@@ -717,6 +717,216 @@
 
 
 
+
+
+
+
+
+
+
+// good  but  some mobile not good
+
+// "use client"
+// import React, { useState } from 'react';
+// import { Camera, User, Phone, LogOut, Lock, ChevronDown } from 'lucide-react';
+
+// const ProfilePage = ({ isProfileMode = false, onSave, onLogout }) => {
+//   const [mode, setMode] = useState(isProfileMode);
+
+//   const [name, setName] = useState("John Doe");
+//   const [photoUrl] = useState(""); 
+//   const [gender, setGender] = useState(mode ? "Male" : ""); 
+//   const [countryCode, setCountryCode] = useState("+91");
+//   const [phone, setPhone] = useState(mode ? "9876543210" : "");
+
+//   const isFormValid = name.trim() !== "" && gender !== "" && phone.length > 5;
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     if (isFormValid) {
+//       if (!mode) setMode(true); 
+//       if (onSave) {
+//         onSave({ name, photoUrl, gender, fullPhone: `${countryCode}${phone}` });
+//       }
+//     }
+//   };
+
+//   const handleLogout = () => {
+//     setMode(false); 
+//     if (onLogout) onLogout();
+//   };
+
+//   return (
+//     // pb-24 കൊടുത്തത് കാർഡിനെ ബോട്ടം ബാറിന് മുകളിലേക്ക് തള്ളി വെക്കാൻ സഹായിക്കും
+//     <div className="h-[100dvh] w-full flex items-center justify-center bg-gradient-to-b from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] px-5 overflow-hidden pb-24">
+      
+//       {/* 
+//         കാർഡിന്റെ ഹൈറ്റ് 580px ആയി കുറച്ചു. 
+//         ഇപ്പോൾ ഇത് ചെറിയ ഫോണുകളിലും ബോട്ടം ബാറിന് മുകളിലായി കൃത്യമായി നിൽക്കും! 
+//       */}
+//       <div className="w-full max-w-[360px] h-[580px] bg-white/90 backdrop-blur-sm rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] px-6 py-5 flex flex-col">
+        
+//         <div className="flex-shrink-0 mb-3">
+//           <h2 className="text-[22px] font-bold text-[#475270] text-center leading-tight">
+//             {mode ? "Your Profile" : "Complete Profile"}
+//           </h2>
+//           <p className="text-slate-500 text-[13px] text-center mt-1">
+//             {mode ? "Update your personal details below." : "Just a couple of details left."}
+//           </p>
+//         </div>
+
+//         <form onSubmit={handleSubmit} className="flex-1 flex flex-col justify-between">
+          
+//           <div className="space-y-3">
+//             {/* Profile Picture */}
+//             <div className="flex justify-center mb-1">
+//               <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-[#9DCBF7] to-[#C69CF7] flex items-center justify-center border-[3px] border-white shadow-sm overflow-hidden">
+//                 {photoUrl ? (
+//                   <img src={photoUrl} alt={name} className="w-full h-full object-cover" />
+//                 ) : (
+//                   <User className="w-8 h-8 text-white" />
+//                 )}
+//                 <button 
+//                   type="button" 
+//                   className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-md border border-slate-100 active:scale-95 transition-transform"
+//                 >
+//                   <Camera className="w-3.5 h-3.5 text-slate-600" />
+//                 </button>
+//               </div>
+//             </div>
+
+//             {/* Name Input */}
+//             <div className="space-y-1">
+//               <label className="text-[12px] font-semibold text-slate-700 ml-1">Full Name</label>
+//               <div className="relative">
+//                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+//                   {gender === 'Female' ? (
+//                     <svg className="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="10" r="5"></circle><line x1="12" y1="15" x2="12" y2="22"></line><line x1="9" y1="19" x2="15" y2="19"></line></svg>
+//                   ) : gender === 'Male' ? (
+//                     <svg className="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="10" cy="14" r="5"></circle><line x1="13.54" y1="10.46" x2="21" y2="3"></line><polyline points="16 3 21 3 21 8"></polyline></svg>
+//                   ) : (
+//                     <User className="w-4 h-4 text-slate-400" />
+//                   )}
+//                 </div>
+//                 <input 
+//                   type="text" 
+//                   value={name}
+//                   onChange={(e) => setName(e.target.value)}
+//                   className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#9DCBF7]/40 focus:border-[#9DCBF7] transition-all text-slate-800 text-[14px]"
+//                   placeholder="Your Name"
+//                 />
+//               </div>
+//             </div>
+
+//             {/* Gender Field */}
+//             <div className="space-y-1">
+//               <div className="flex items-center justify-between ml-1 mr-1">
+//                 <label className="text-[12px] font-semibold text-slate-700">Gender</label>
+//                 {mode && (
+//                   <span className="flex items-center gap-1 text-[10px] text-slate-400 font-semibold bg-slate-100 px-2 py-0.5 rounded-md">
+//                     <Lock className="w-2.5 h-2.5" /> Cannot change
+//                   </span>
+//                 )}
+//               </div>
+//               <div className="grid grid-cols-3 gap-2">
+//                 {['Male', 'Female', 'Other'].map((g) => {
+//                   const isSelected = gender === g;
+//                   return (
+//                     <button
+//                       key={g}
+//                       type="button"
+//                       disabled={mode}
+//                       onClick={() => !mode && setGender(g)}
+//                       className={`py-2 px-2 rounded-2xl text-[13px] font-semibold transition-all ${
+//                         isSelected 
+//                           ? 'bg-gradient-to-br from-[#9DCBF7] to-[#C69CF7] text-white shadow-sm border-2 border-transparent' 
+//                           : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
+//                       } ${mode && !isSelected ? 'opacity-40 cursor-not-allowed' : ''} 
+//                         ${mode && isSelected ? 'cursor-default' : ''}`}
+//                     >
+//                       {g}
+//                     </button>
+//                   );
+//                 })}
+//               </div>
+//             </div>
+
+//             {/* Phone Number Input */}
+//             <div className="space-y-1">
+//               <label className="text-[12px] font-semibold text-slate-700 ml-1">Phone Number</label>
+//               <div className="flex gap-2">
+//                 <div className="relative w-[85px] flex-shrink-0">
+//                   <select 
+//                     value={countryCode}
+//                     onChange={(e) => setCountryCode(e.target.value)}
+//                     className="w-full h-full appearance-none bg-white border border-slate-200 rounded-2xl pl-3 pr-6 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#9DCBF7]/40 focus:border-[#9DCBF7] text-slate-800 text-[14px] font-medium transition-all cursor-pointer"
+//                   >
+//                     <option value="+91">+91</option>
+//                     <option value="+971">+971</option>
+//                     <option value="+1">+1</option>
+//                   </select>
+//                   <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+//                     <ChevronDown className="w-4 h-4 text-slate-400" />
+//                   </div>
+//                 </div>
+
+//                 <div className="relative flex-1">
+//                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+//                     <Phone className="w-4 h-4 text-slate-400" />
+//                   </div>
+//                   <input 
+//                     type="tel" 
+//                     value={phone}
+//                     onChange={(e) => setPhone(e.target.value)}
+//                     className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#9DCBF7]/40 focus:border-[#9DCBF7] transition-all text-slate-800 text-[14px]"
+//                     placeholder="00000 00000"
+//                   />
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Button Section */}
+//           <div className="mt-auto pt-3 space-y-2.5">
+//             <button 
+//               type="submit"
+//               disabled={!isFormValid}
+//               className={`w-full py-3 rounded-full font-semibold transition-all duration-300 ${
+//                 isFormValid 
+//                   ? 'bg-gradient-to-r from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] text-white shadow-md shadow-[#9DCBF7]/30 hover:brightness-105 active:scale-[0.98]' 
+//                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+//               }`}
+//             >
+//               {mode ? "Save Changes" : "Save & Enter App"}
+//             </button>
+
+//             {mode ? (
+//               <button 
+//                 type="button"
+//                 onClick={handleLogout}
+//                 className="w-full py-3 rounded-full font-semibold flex items-center justify-center gap-2 bg-white border border-rose-200 text-rose-500 hover:bg-rose-50 active:scale-[0.98] transition-all duration-300"
+//               >
+//                 <LogOut className="w-4 h-4" /> Log Out
+//               </button>
+//             ) : (
+//               // Empty space to maintain fixed box size
+//               <div className="h-[44px] w-full"></div> 
+//             )}
+//           </div>
+          
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ProfilePage;
+
+
+
+
+//   every mobile ui  matching test
+
 "use client"
 import React, { useState } from 'react';
 import { Camera, User, Phone, LogOut, Lock, ChevronDown } from 'lucide-react';
@@ -748,16 +958,18 @@ const ProfilePage = ({ isProfileMode = false, onSave, onLogout }) => {
   };
 
   return (
-    // pb-24 കൊടുത്തത് കാർഡിനെ ബോട്ടം ബാറിന് മുകളിലേക്ക് തള്ളി വെക്കാൻ സഹായിക്കും
-    <div className="h-[100dvh] w-full flex items-center justify-center bg-gradient-to-b from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] px-5 overflow-hidden pb-24">
+    // FIX 1: h-[100dvh] മാറ്റി min-h-[100dvh] ആക്കി. 
+    // FIX 2: overflow-hidden മാറ്റി overflow-y-auto ആക്കി (സ്ക്രോൾ ചെയ്യാൻ).
+    // FIX 3: pb-32 (വലിയ പാഡിംഗ്) കൊടുത്തു, അപ്പോൾ ബോട്ടം ബാറിന് പിന്നിൽ കാർഡ് മറയില്ല.
+    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center bg-gradient-to-b from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] px-5 py-10 pb-32 overflow-y-auto">
       
       {/* 
-        കാർഡിന്റെ ഹൈറ്റ് 580px ആയി കുറച്ചു. 
-        ഇപ്പോൾ ഇത് ചെറിയ ഫോണുകളിലും ബോട്ടം ബാറിന് മുകളിലായി കൃത്യമായി നിൽക്കും! 
+        FIX 4: h-[580px] മാറ്റി min-h-[580px] ആക്കി. 
+        ഇപ്പോൾ സ്ക്രീൻ ചെറുതാണെങ്കിലും കാർഡ് കൃത്യമായി നിൽക്കുകയും, സ്ക്രോൾ ചെയ്ത് താഴെ എത്താനും സാധിക്കും. 
       */}
-      <div className="w-full max-w-[360px] h-[580px] bg-white/90 backdrop-blur-sm rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] px-6 py-5 flex flex-col">
+      <div className="w-full max-w-[360px] min-h-[580px] bg-white/90 backdrop-blur-sm rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] px-6 py-6 flex flex-col my-auto mt-4">
         
-        <div className="flex-shrink-0 mb-3">
+        <div className="flex-shrink-0 mb-4">
           <h2 className="text-[22px] font-bold text-[#475270] text-center leading-tight">
             {mode ? "Your Profile" : "Complete Profile"}
           </h2>
@@ -768,9 +980,9 @@ const ProfilePage = ({ isProfileMode = false, onSave, onLogout }) => {
 
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col justify-between">
           
-          <div className="space-y-3">
+          <div className="space-y-4">
             {/* Profile Picture */}
-            <div className="flex justify-center mb-1">
+            <div className="flex justify-center mb-2">
               <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-[#9DCBF7] to-[#C69CF7] flex items-center justify-center border-[3px] border-white shadow-sm overflow-hidden">
                 {photoUrl ? (
                   <img src={photoUrl} alt={name} className="w-full h-full object-cover" />
@@ -878,11 +1090,11 @@ const ProfilePage = ({ isProfileMode = false, onSave, onLogout }) => {
           </div>
 
           {/* Button Section */}
-          <div className="mt-auto pt-3 space-y-2.5">
+          <div className="mt-6 space-y-3">
             <button 
               type="submit"
               disabled={!isFormValid}
-              className={`w-full py-3 rounded-full font-semibold transition-all duration-300 ${
+              className={`w-full py-3.5 rounded-full font-semibold transition-all duration-300 ${
                 isFormValid 
                   ? 'bg-gradient-to-r from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] text-white shadow-md shadow-[#9DCBF7]/30 hover:brightness-105 active:scale-[0.98]' 
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
@@ -895,13 +1107,13 @@ const ProfilePage = ({ isProfileMode = false, onSave, onLogout }) => {
               <button 
                 type="button"
                 onClick={handleLogout}
-                className="w-full py-3 rounded-full font-semibold flex items-center justify-center gap-2 bg-white border border-rose-200 text-rose-500 hover:bg-rose-50 active:scale-[0.98] transition-all duration-300"
+                className="w-full py-3.5 rounded-full font-semibold flex items-center justify-center gap-2 bg-white border border-rose-200 text-rose-500 hover:bg-rose-50 active:scale-[0.98] transition-all duration-300"
               >
                 <LogOut className="w-4 h-4" /> Log Out
               </button>
             ) : (
-              // Empty space to maintain fixed box size
-              <div className="h-[44px] w-full"></div> 
+              // Empty placeholder space
+              <div className="h-[50px] w-full"></div> 
             )}
           </div>
           
