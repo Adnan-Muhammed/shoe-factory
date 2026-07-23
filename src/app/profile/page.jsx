@@ -1,12 +1,14 @@
 
+
 // "use client"
 // import React, { useState } from 'react';
-// import { Camera, User, Phone } from 'lucide-react';
+// import { Camera, User, Phone, Check } from 'lucide-react';
 
 // const OnboardingPage = () => {
- 
-//   //  just like a google data 
-//   const [name, setName] = useState("John Doe"); 
+
+//   // Pre-filled from Google — name & photo already come from the OAuth profile
+//   const [name] = useState("John Doe");
+//   const [photoUrl] = useState(""); // populate with Google photo URL when wiring up auth
 //   const [gender, setGender] = useState("");
 //   const [phone, setPhone] = useState("");
 
@@ -21,90 +23,100 @@
 //   };
 
 //   return (
-//     <div className="min-h-screen bg-slate-50 p-6 flex justify-center">
-//       <div className="w-full max-w-md pt-8">
-        
-//         <h2 className="text-2xl font-bold text-slate-800 mb-1 text-center">Complete Your Profile</h2>
-//         <p className="text-slate-500 text-sm text-center mb-8">Just a few details to get started.</p>
+//     <div className="min-h-[100dvh] w-full flex items-center justify-center bg-gradient-to-b from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] px-6 py-10">
+//       <div className="w-full max-w-sm">
 
-//         <form onSubmit={handleSubmit} className="space-y-6">
-          
-//           {/* Profile Picture */}
-//           <div className="flex justify-center mb-6">
-//             <div className="relative w-24 h-24 rounded-full bg-emerald-100 flex items-center justify-center border-4 border-white shadow-sm">
-//               <User className="w-10 h-10 text-emerald-500" />
-//               <button type="button" className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-slate-100 active:scale-95">
-//                 <Camera className="w-4 h-4 text-slate-600" />
+//         {/* Card floats on the gradient, echoing the auth screen's language */}
+//         <div className="bg-white/90 backdrop-blur-sm rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] px-6 pt-8 pb-7">
+
+//           <h2 className="text-[24px] font-bold text-[#475270] text-center leading-tight">
+//             Complete Your Profile
+//           </h2>
+//           <p className="text-slate-500 text-sm text-center mt-1 mb-7">
+//             Just a couple of details left.
+//           </p>
+
+//           <form onSubmit={handleSubmit} className="space-y-6">
+
+//             {/* Profile Picture — pulled from Google, so it's a preview, not an empty state */}
+//             <div className="flex justify-center">
+//               <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-[#9DCBF7] to-[#C69CF7] flex items-center justify-center border-4 border-white shadow-sm overflow-hidden">
+//                 {photoUrl ? (
+//                   <img src={photoUrl} alt={name} className="w-full h-full object-cover" />
+//                 ) : (
+//                   <User className="w-10 h-10 text-white" />
+//                 )}
+//                 <button
+//                   type="button"
+//                   className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-slate-100 active:scale-95"
+//                   aria-label="Change photo"
+//                 >
+//                   <Camera className="w-4 h-4 text-slate-600" />
+//                 </button>
+//               </div>
+//             </div>
+
+//             {/* Name — from Google, shown as confirmed rather than editable-looking */}
+//             <div className="flex items-center justify-center gap-1.5 -mt-1">
+//               <span className="text-[17px] font-semibold text-slate-800">{name}</span>
+//               <Check className="w-4 h-4 text-emerald-500" />
+//             </div>
+
+//             {/* Gender Selection (Mandatory Buttons) */}
+//             <div className="space-y-2">
+//               <label className="text-sm font-medium text-slate-700 ml-1">Gender *</label>
+//               <div className="grid grid-cols-3 gap-3">
+//                 {['Male', 'Female', 'Other'].map((g) => (
+//                   <button
+//                     key={g}
+//                     type="button"
+//                     onClick={() => setGender(g)}
+//                     className={`py-3 px-2 rounded-2xl text-sm font-medium transition-all ${
+//                       gender === g
+//                         ? 'bg-gradient-to-br from-[#9DCBF7] to-[#C69CF7] text-white border-2 border-transparent shadow-sm'
+//                         : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
+//                     }`}
+//                   >
+//                     {g}
+//                   </button>
+//                 ))}
+//               </div>
+//             </div>
+
+//             {/* Phone Number (Mandatory) */}
+//             <div className="space-y-1.5">
+//               <label className="text-sm font-medium text-slate-700 ml-1">Phone Number *</label>
+//               <div className="relative">
+//                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+//                   <Phone className="w-4 h-4 text-slate-400" />
+//                 </div>
+//                 <input
+//                   type="tel"
+//                   value={phone}
+//                   onChange={(e) => setPhone(e.target.value)}
+//                   className="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#9DCBF7]/40 focus:border-[#9DCBF7] transition-all text-slate-800"
+//                   placeholder="+91 00000 00000"
+//                 />
+//               </div>
+//             </div>
+
+//             {/* Submit Button */}
+//             <div className="pt-2">
+//               <button
+//                 type="submit"
+//                 disabled={!isFormValid}
+//                 className={`w-full py-4 rounded-full font-medium transition-all duration-300 ${
+//                   isFormValid
+//                     ? 'bg-gradient-to-r from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] text-white shadow-md shadow-[#9DCBF7]/30 hover:brightness-105 active:scale-[0.98]'
+//                     : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+//                 }`}
+//               >
+//                 Save & Enter App
 //               </button>
 //             </div>
-//           </div>
 
-//           {/* Name Field (Pre-filled) */}
-//           <div className="space-y-1.5">
-//             <label className="text-sm font-medium text-slate-700 ml-1">Full Name</label>
-//             <input 
-//               type="text" 
-//               value={name}
-//               onChange={(e) => setName(e.target.value)}
-//               className="w-full px-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-slate-800"
-//               placeholder="Your name"
-//             />
-//           </div>
-
-//           {/* Gender Selection (Mandatory Buttons) */}
-//           <div className="space-y-2">
-//             <label className="text-sm font-medium text-slate-700 ml-1">Gender *</label>
-//             <div className="grid grid-cols-3 gap-3">
-//               {['Male', 'Female', 'Other'].map((g) => (
-//                 <button
-//                   key={g}
-//                   type="button"
-//                   onClick={() => setGender(g)}
-//                   className={`py-3 px-2 rounded-2xl text-sm font-medium transition-all ${
-//                     gender === g 
-//                       ? 'bg-emerald-100 text-emerald-700 border-2 border-emerald-500 shadow-sm' 
-//                       : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
-//                   }`}
-//                 >
-//                   {g}
-//                 </button>
-//               ))}
-//             </div>
-//           </div>
-
-//           {/* Phone Number (Mandatory) */}
-//           <div className="space-y-1.5">
-//             <label className="text-sm font-medium text-slate-700 ml-1">Phone Number *</label>
-//             <div className="relative">
-//               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-//                 <Phone className="w-4 h-4 text-slate-400" />
-//               </div>
-//               <input 
-//                 type="tel" 
-//                 value={phone}
-//                 onChange={(e) => setPhone(e.target.value)}
-//                 className="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-slate-800"
-//                 placeholder="+91 00000 00000"
-//               />
-//             </div>
-//           </div>
-
-//           {/* Submit Button */}
-//           <div className="pt-4">
-//             <button 
-//               type="submit"
-//               disabled={!isFormValid}
-//               className={`w-full py-4 rounded-full font-medium transition-all duration-300 ${
-//                 isFormValid 
-//                   ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20 hover:bg-emerald-600 active:scale-[0.98]' 
-//                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-//               }`}
-//             >
-//               Save & Enter App
-//             </button>
-//           </div>
-
-//         </form>
+//           </form>
+//         </div>
 //       </div>
 //     </div>
 //   );
@@ -113,45 +125,45 @@
 // export default OnboardingPage;
 
 
+
 "use client"
 import React, { useState } from 'react';
-import { Camera, User, Phone, Check } from 'lucide-react';
+import { Camera, User, Phone, LogOut, Lock, ChevronDown } from 'lucide-react';
 
-const OnboardingPage = () => {
+const ProfilePage = ({ isProfileMode = true, onSave, onLogout }) => {
+  // ഗൂഗിളിൽ നിന്നും ലഭിക്കുന്ന ഡാറ്റ (അല്ലെങ്കിൽ ഡാറ്റാബേസിൽ നിന്നുള്ള പഴയ ഡാറ്റ)
+  const [name, setName] = useState("John Doe");
+  const [photoUrl] = useState(""); 
+  const [gender, setGender] = useState(isProfileMode ? "Male" : ""); 
+  const [countryCode, setCountryCode] = useState("+91");
+  const [phone, setPhone] = useState(isProfileMode ? "9876543210" : "");
 
-  // Pre-filled from Google — name & photo already come from the OAuth profile
-  const [name] = useState("John Doe");
-  const [photoUrl] = useState(""); // populate with Google photo URL when wiring up auth
-  const [gender, setGender] = useState("");
-  const [phone, setPhone] = useState("");
-
-  const isFormValid = gender !== "" && phone.length > 8;
+  const isFormValid = name.trim() !== "" && gender !== "" && phone.length > 5;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (isFormValid) {
-      console.log("Saving User Data: ", { name, gender, phone });
-      // go to the next dashboard
+    if (isFormValid && onSave) {
+      onSave({ name, photoUrl, gender, fullPhone: `${countryCode}${phone}` });
     }
   };
 
   return (
-    <div className="min-h-[100dvh] w-full flex items-center justify-center bg-gradient-to-b from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] px-6 py-10">
+    <div className={`min-h-[100dvh] w-full flex items-center justify-center bg-gradient-to-b from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] px-6 ${isProfileMode ? 'py-10 pb-24' : 'py-10'}`}>
       <div className="w-full max-w-sm">
 
-        {/* Card floats on the gradient, echoing the auth screen's language */}
+        {/* ഗ്ലാസ് കാർഡ് ഡിസൈൻ */}
         <div className="bg-white/90 backdrop-blur-sm rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] px-6 pt-8 pb-7">
-
+          
           <h2 className="text-[24px] font-bold text-[#475270] text-center leading-tight">
-            Complete Your Profile
+            {isProfileMode ? "Your Profile" : "Complete Your Profile"}
           </h2>
           <p className="text-slate-500 text-sm text-center mt-1 mb-7">
-            Just a couple of details left.
+            {isProfileMode ? "Update your personal details below." : "Just a couple of details left."}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-
-            {/* Profile Picture — pulled from Google, so it's a preview, not an empty state */}
+            
+            {/* പ്രൊഫൈൽ പിക്ചർ (എഡിറ്റ് ചെയ്യാം) */}
             <div className="flex justify-center">
               <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-[#9DCBF7] to-[#C69CF7] flex items-center justify-center border-4 border-white shadow-sm overflow-hidden">
                 {photoUrl ? (
@@ -159,9 +171,9 @@ const OnboardingPage = () => {
                 ) : (
                   <User className="w-10 h-10 text-white" />
                 )}
-                <button
-                  type="button"
-                  className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-slate-100 active:scale-95"
+                <button 
+                  type="button" 
+                  className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-slate-100 active:scale-95 transition-transform"
                   aria-label="Change photo"
                 >
                   <Camera className="w-4 h-4 text-slate-600" />
@@ -169,65 +181,123 @@ const OnboardingPage = () => {
               </div>
             </div>
 
-            {/* Name — from Google, shown as confirmed rather than editable-looking */}
-            <div className="flex items-center justify-center gap-1.5 -mt-1">
-              <span className="text-[17px] font-semibold text-slate-800">{name}</span>
-              <Check className="w-4 h-4 text-emerald-500" />
-            </div>
-
-            {/* Gender Selection (Mandatory Buttons) */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 ml-1">Gender *</label>
-              <div className="grid grid-cols-3 gap-3">
-                {['Male', 'Female', 'Other'].map((g) => (
-                  <button
-                    key={g}
-                    type="button"
-                    onClick={() => setGender(g)}
-                    className={`py-3 px-2 rounded-2xl text-sm font-medium transition-all ${
-                      gender === g
-                        ? 'bg-gradient-to-br from-[#9DCBF7] to-[#C69CF7] text-white border-2 border-transparent shadow-sm'
-                        : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
-                    }`}
-                  >
-                    {g}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Phone Number (Mandatory) */}
+            {/* പേര് (എഡിറ്റ് ചെയ്യാം) */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700 ml-1">Phone Number *</label>
+              <label className="text-sm font-medium text-slate-700 ml-1">Full Name *</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Phone className="w-4 h-4 text-slate-400" />
+                  <User className="w-4 h-4 text-slate-400" />
                 </div>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                <input 
+                  type="text" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#9DCBF7]/40 focus:border-[#9DCBF7] transition-all text-slate-800"
-                  placeholder="+91 00000 00000"
+                  placeholder="Your Name"
                 />
               </div>
             </div>
 
-            {/* Submit Button */}
-            <div className="pt-2">
-              <button
+            {/* ജെൻഡർ (Profile Mode-ൽ ലോക്ക് ചെയ്യപ്പെടും) */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between ml-1 mr-1">
+                <label className="text-sm font-medium text-slate-700">Gender *</label>
+                {isProfileMode && (
+                  <span className="flex items-center gap-1 text-[11px] text-slate-400 font-medium bg-slate-100 px-2 py-0.5 rounded-md">
+                    <Lock className="w-3 h-3" /> Cannot change
+                  </span>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-3 gap-3">
+                {['Male', 'Female', 'Other'].map((g) => {
+                  const isSelected = gender === g;
+                  return (
+                    <button
+                      key={g}
+                      type="button"
+                      disabled={isProfileMode} // Profile Mode ആണെങ്കിൽ ക്ലിക്ക് ചെയ്യാൻ പറ്റില്ല
+                      onClick={() => !isProfileMode && setGender(g)}
+                      className={`py-3 px-2 rounded-2xl text-sm font-medium transition-all ${
+                        isSelected 
+                          ? 'bg-gradient-to-br from-[#9DCBF7] to-[#C69CF7] text-white shadow-sm border-2 border-transparent' 
+                          : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
+                      } ${isProfileMode && !isSelected ? 'opacity-50 cursor-not-allowed' : ''} 
+                        ${isProfileMode && isSelected ? 'cursor-default' : ''}`}
+                    >
+                      {g}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ഫോൺ നമ്പർ വിത്ത് കൺട്രി കോഡ് (എഡിറ്റ് ചെയ്യാം) */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700 ml-1">Phone Number *</label>
+              <div className="flex gap-2">
+                
+                {/* കൺട്രി കോഡ് സെലക്ട് */}
+                <div className="relative w-[90px] flex-shrink-0">
+                  <select 
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value)}
+                    className="w-full h-full appearance-none bg-white border border-slate-200 rounded-2xl pl-3 pr-7 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#9DCBF7]/40 focus:border-[#9DCBF7] text-slate-800 text-sm font-medium transition-all cursor-pointer"
+                  >
+                    <option value="+91">+91</option>
+                    <option value="+971">+971</option>
+                    <option value="+1">+1</option>
+                    <option value="+44">+44</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none">
+                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                  </div>
+                </div>
+
+                {/* ഫോൺ ഇൻപുട്ട് */}
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Phone className="w-4 h-4 text-slate-400" />
+                  </div>
+                  <input 
+                    type="tel" 
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#9DCBF7]/40 focus:border-[#9DCBF7] transition-all text-slate-800"
+                    placeholder="00000 00000"
+                  />
+                </div>
+
+              </div>
+            </div>
+
+            {/* സേവ് & ലോഗ്ഔട്ട് ബട്ടണുകൾ */}
+            <div className="pt-2 space-y-3">
+              
+              <button 
                 type="submit"
                 disabled={!isFormValid}
                 className={`w-full py-4 rounded-full font-medium transition-all duration-300 ${
-                  isFormValid
-                    ? 'bg-gradient-to-r from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] text-white shadow-md shadow-[#9DCBF7]/30 hover:brightness-105 active:scale-[0.98]'
+                  isFormValid 
+                    ? 'bg-gradient-to-r from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] text-white shadow-md shadow-[#9DCBF7]/30 hover:brightness-105 active:scale-[0.98]' 
                     : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                 }`}
               >
-                Save & Enter App
+                {isProfileMode ? "Save Changes" : "Save & Enter App"}
               </button>
-            </div>
 
+              {isProfileMode && (
+                <button 
+                  type="button"
+                  onClick={onLogout}
+                  className="w-full py-3.5 rounded-full font-medium flex items-center justify-center gap-2 bg-white border border-rose-200 text-rose-500 hover:bg-rose-50 active:scale-[0.98] transition-all duration-300"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Log Out
+                </button>
+              )}
+
+            </div>
           </form>
         </div>
       </div>
@@ -235,4 +305,4 @@ const OnboardingPage = () => {
   );
 };
 
-export default OnboardingPage;
+export default ProfilePage;

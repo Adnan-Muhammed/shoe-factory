@@ -353,4 +353,4 @@ const NotificationRow = ({ notification, onMarkRead, onAccept, onReject }) => {
   );
 };
 
-export default NotificationsPage;
+export default NotificationsPage; 
