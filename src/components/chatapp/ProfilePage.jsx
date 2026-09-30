@@ -958,14 +958,14 @@ const ProfilePage = ({ isProfileMode = false, onSave, onLogout }) => {
   };
 
   return (
-    // FIX 1: h-[100dvh] മാറ്റി min-h-[100dvh] ആക്കി. 
-    // FIX 2: overflow-hidden മാറ്റി overflow-y-auto ആക്കി (സ്ക്രോൾ ചെയ്യാൻ).
-    // FIX 3: pb-32 (വലിയ പാഡിംഗ്) കൊടുത്തു, അപ്പോൾ ബോട്ടം ബാറിന് പിന്നിൽ കാർഡ് മറയില്ല.
+    // FIX 1: h-[100dvh] change to min-h-[100dvh] . 
+    // FIX 2: overflow-hidden change to overflow-y-auto  (for scrolling).
+    // FIX 3: pb-32 (big padding) give, so   under bottombar the card never covered.
     <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center bg-gradient-to-b from-[#7FE2E3] via-[#9DCBF7] to-[#C69CF7] px-5 py-10 pb-32 overflow-y-auto">
       
       {/* 
-        FIX 4: h-[580px] മാറ്റി min-h-[580px] ആക്കി. 
-        ഇപ്പോൾ സ്ക്രീൻ ചെറുതാണെങ്കിലും കാർഡ് കൃത്യമായി നിൽക്കുകയും, സ്ക്രോൾ ചെയ്ത് താഴെ എത്താനും സാധിക്കും. 
+        FIX 4: h-[580px] change to min-h-[580px] . 
+        now even if the screen small the card tetap and can scroll to bottom . 
       */}
       <div className="w-full max-w-[360px] min-h-[580px] bg-white/90 backdrop-blur-sm rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] px-6 py-6 flex flex-col my-auto mt-4">
         
@@ -1116,10 +1116,9 @@ const ProfilePage = ({ isProfileMode = false, onSave, onLogout }) => {
               <div className="h-[50px] w-full"></div> 
             )}
           </div>
-          
         </form>
       </div>
-    </div>
+    </div>      
   );
 };
 
