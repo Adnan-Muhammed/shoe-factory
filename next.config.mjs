@@ -13,8 +13,8 @@ const nextConfig = {
         destination: '/ai-chat-app2.html',
       },
       {
-        source: '/ai-chat-app-3',
-        destination: '/ai-chat-app3.html',
+        source: '/ai-chat-app-4',
+        destination: '/ai-chat-app4.html',
       },
     ];
   },
