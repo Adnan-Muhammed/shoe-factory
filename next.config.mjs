@@ -12,6 +12,10 @@ const nextConfig = {
         source: '/ai-chat-app-2',
         destination: '/ai-chat-app2.html',
       },
+      {
+        source: '/ai-chat-app-3',
+        destination: '/ai-chat-app3.html',
+      },
     ];
   },
 };
