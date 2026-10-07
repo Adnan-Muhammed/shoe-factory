@@ -492,7 +492,7 @@ function paintLearn(){
   $('.learn').dataset.lv=ui.lview;
 }
 const tcomp=()=>`<div class="composer tcomp"><input disabled placeholder="Ask your AI Tutor… (coming soon)" aria-label="Message AI Tutor"><button class="send" disabled aria-label="Send">${I.send}</button></div>`;
-const thead=(t,s)=>`<header class="chead"><button class="iconbtn back" data-tv="" aria-label="Back">${I.back}</button><div class="av" style="background:var(--acc)">${I.tutor}</div><div class="meta"><div class="nm">${t}</div><div class="sb">${s}</div></div>${THEME_BTN}</header>`;
+const thead=(t,s)=>`<header class="chead"><button class="iconbtn back" id="back" aria-label="Back">${I.back}</button><div class="av" style="background:var(--acc)">${I.tutor}</div><div class="meta"><div class="nm">${t}</div><div class="sb">${s}</div></div>${THEME_BTN}</header>`;
 function showTutorMain(){
   const v=tv(),m=$('#main');
   if(v==='structures'){
@@ -521,7 +521,7 @@ document.addEventListener('click',e=>{
   if(d.go)go(d.go);else if(d.chat)openChat(d.chat);else if(d.invite)sendFriendRequest(d.invite);
   else if(d.accept)acceptFriendRequest(d.accept);else if(d.reject)rejectFriendRequest(d.reject);
   else if('theme2' in d)toggleTheme();
-  else if(t.id==='back'){ui.chat=null;render()}else if(t.id==='sendBtn')sendMessage();
+  else if(t.id==='back'){ui.chat=null;ui.tview=ui.tfrom||null;ui.tfrom=null;render()}else if(t.id==='sendBtn')sendMessage();
   else if(t.id==='editBtn')editProfile();else if(t.id==='cancelEdit'){ui.editing=false;render()}
   else if(t.id==='logoutBtn')logout();else if(t.id==='fab')go('users');
 });
@@ -534,7 +534,7 @@ document.addEventListener('click',e=>{
   if('lv' in d){ui.lview=d.lv;return paintLearn()}
   if('tv' in d){
     const k=d.tv;
-    if(k){ui.tfrom=(ui.tview&&ui.tview!==k)?ui.tview:null;ui.tview=k}else{ui.tview=ui.tfrom||null;ui.tfrom=null}
+    if(k){ui.tfrom=(ui.tview&&ui.tview!==k)?ui.tview:null;ui.tview=k}
     if(k&&!['chat','structures'].includes(k)&&!wide())toast('Coming soon');
     render();
   }
