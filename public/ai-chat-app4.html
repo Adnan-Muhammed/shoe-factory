@@ -146,11 +146,11 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
 .lcard .top{display:flex;align-items:center;gap:8px}
 .num{width:26px;height:26px;border-radius:50%;background:var(--acc-soft);color:var(--acc);font-size:12px;font-weight:700;display:grid;place-items:center;flex:none}
 .gtag{font-size:11.5px;color:var(--mute);font-weight:600}
-.en{font-size:18px;font-weight:700;line-height:1.3;overflow-wrap:anywhere}
+.en{font-size:18px;font-weight:700;line-height:1.3;overflow-wrap:anywhere;color:#000}
 .ml{font-size:14.5px;color:var(--mute);overflow-wrap:anywhere}
 .lbl2{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);margin-top:2px}
 .chips{display:flex;flex-wrap:wrap;gap:5px 4px;align-items:center}
-.chip{background:var(--panel);border:1px solid var(--line);color:var(--acc);font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:8px;overflow-wrap:anywhere}
+.chip{background:#fff;border:1px solid #e4dcf1;color:#6b1cc2;font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:8px;overflow-wrap:anywhere}
 .plus{font-style:normal;color:var(--mute);font-size:12px}
 .ltable{display:none;overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
 .ltable table{width:100%;border-collapse:collapse;font-size:14.5px}
@@ -170,6 +170,11 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
   .learn[data-lv=table] .lcards{display:none}
   .learn[data-lv=table] .ltable{display:block}
 }
+
+/* ===== AI Tutor High-Contrast Overrides ===== */
+:root[data-theme=dark] .en{color:#fff}
+:root[data-theme=dark] .ml{color:#fff}
+:root[data-theme=dark] .chip{background:#0e071b;border:1px solid #2a1c44;color:#d6b3ff}
 
 /* ===== Responsive ===== */
 @media (max-width:1199px){#app{grid-template-columns:76px 300px 1fr}#app[data-tab=profile]{grid-template-columns:76px 1fr}}
