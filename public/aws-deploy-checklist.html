@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AWS Deployment Master Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Malayalam:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f6f4;--surface:#fff;--surface2:#f0f0ed;--line:#e4e4e0;--text:#26282b;--muted:#6d717a;
+  --accent:#4f6a8f;--accent-soft:#e8edf4;--ok:#5b8a6e;--ok-soft:#e6f0ea;--note:#f4f1e8;
+  --shadow:0 1px 2px rgba(20,24,30,.04);
+  --f:"Inter","Noto Sans Malayalam",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#17181a;--surface:#1f2124;--surface2:#272a2e;--line:#2f3237;--text:#e3e4e6;--muted:#9a9ea6;
+  --accent:#8fa8c9;--accent-soft:#252c36;--ok:#7fb393;--ok-soft:#222d27;--note:#2a2820;
+  --shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(88px + env(safe-area-inset-top,0px))}
+body{margin:0;background:var(--bg);color:var(--text);font:400 15px/1.65 var(--f);-webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom,0px);transition:background .25s,color .25s}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+header.bar{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+  padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px}
+.bar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.bar-title{font-weight:600;font-size:15px;white-space:nowrap}
+.prog{flex:1;min-width:0}
+.prog-track{height:6px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.prog-fill{height:100%;width:0;background:var(--ok);border-radius:99px;transition:width .4s ease}
+.prog-txt{font-size:12px;color:var(--muted);margin-top:3px;text-align:right}
+.theme{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);flex:none}
+.theme svg{width:18px;height:18px}
+.theme .moon{display:none}
+:root[data-theme="dark"] .theme .sun{display:none}
+:root[data-theme="dark"] .theme .moon{display:block}
+
+main{max-width:760px;margin:0 auto;padding:36px 16px 80px}
+.hero h1{font-size:clamp(24px,5vw,32px);line-height:1.25;margin:0 0 8px;font-weight:600;letter-spacing:-.01em}
+.hero p{margin:0;color:var(--muted)}
+.tools{display:flex;gap:8px;margin:22px 0 4px;flex-wrap:wrap}
+.chip{padding:6px 14px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-size:13px;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+
+section{margin-top:34px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 2px 10px}
+.sec-head h2{margin:0;font-size:16px;font-weight:600}
+.sec-head span{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.item+.item{border-top:1px solid var(--line)}
+.row{display:flex;align-items:stretch}
+.check{flex:none;width:52px;display:grid;place-items:center}
+.check i{width:22px;height:22px;border-radius:50%;border:1.6px solid var(--muted);display:grid;place-items:center;transition:.2s}
+.check svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.6);transition:.2s}
+.item.done .check i{background:var(--ok);border-color:var(--ok)}
+.item.done .check svg{opacity:1;transform:none}
+.toggle{flex:1;min-width:0;display:flex;align-items:center;gap:12px;text-align:left;padding:15px 16px 15px 0}
+.num{flex:none;min-width:22px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.topic{flex:1;min-width:0;font-weight:500;transition:.2s}
+.item.done .topic{text-decoration:line-through;text-decoration-color:var(--muted);color:var(--muted)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none;display:none}
+.item.has-note .dot{display:block}
+.chev{flex:none;width:18px;height:18px;color:var(--muted);transition:transform .25s}
+.item.open .chev{transform:rotate(180deg)}
+
+.drawer{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.item.open .drawer{grid-template-rows:1fr}
+.drawer>div{overflow:hidden}
+.body{padding:2px 16px 18px 52px;display:grid;gap:12px}
+.action{margin:0}
+.hint{margin:0;padding:10px 12px;border-radius:10px;background:var(--note);font-size:13.5px;color:var(--muted)}
+.yt{display:inline-flex;align-items:center;gap:8px;color:var(--accent);text-decoration:none;font-size:13.5px;font-weight:500;width:fit-content;max-width:100%}
+.yt svg{width:18px;height:18px;flex:none}
+.yt span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.yt:hover span{text-decoration:underline}
+textarea{width:100%;min-height:96px;resize:vertical;padding:11px 12px;border-radius:10px;border:1px solid var(--line);
+  background:var(--bg);color:var(--text);font:inherit;font-size:14px;line-height:1.6;transition:border-color .2s}
+textarea:focus{outline:0;border-color:var(--accent)}
+.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.save{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:10px;background:var(--accent);color:#fff;font-size:13.5px;font-weight:500}
+:root[data-theme="dark"] .save{color:#14181d}
+.save svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.save:active{transform:scale(.97)}
+.saved{font-size:12.5px;color:var(--ok);opacity:0;transition:opacity .25s}
+.saved.show{opacity:1}
+.empty{text-align:center;color:var(--muted);padding:40px 0;display:none}
+
+@media (max-width:520px){
+  .bar-title{display:none}
+  .body{padding-left:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <div class="bar-title">AWS Checklist</div>
+    <div class="prog">
+      <div class="prog-track"><div class="prog-fill" id="fill"></div></div>
+      <div class="prog-txt" id="ptxt"></div>
+    </div>
+    <button class="theme" id="theme" aria-label="Toggle light and dark mode">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1 id="title"></h1>
+    <p id="sub"></p>
+    <div class="tools">
+      <button class="chip" data-f="all" aria-pressed="true">All</button>
+      <button class="chip" data-f="todo" aria-pressed="false">Pending</button>
+      <button class="chip" data-f="done" aria-pressed="false">Completed</button>
+    </div>
+  </div>
+  <div id="app"></div>
+  <div class="empty" id="empty">Nothing here yet.</div>
+</main>
+
+<script>
+/* ---------- Data ---------- */
+const VIDEOS = {
+  a:["Run Docker Containers on AWS EC2","v8zhVcgyl6Q"],
+  b:["How to Deploy Your Application on AWS EC2","bZqLeiid5ZM"],
+  c:["Full Node.js Deployment - Nginx, SSL With Lets Encrypt","ofBFl4M4BFk"],
+  d:["Complete Deployment | Docker | AWS | EC2","wGjyuDvvRx4"],
+  e:["Complete Docker + AWS | Deploy Your First Project","Uf6PXnagtsg"],
+  f:["Full Node.js Deployment to AWS - FREE SSL, NGINX","yhiuV6cqkNs"],
+  g:["Auto Deploy Nodejs Rest API on AWS EC2","yhiuV6cqkNs"],
+  h:["How to Deploy a Node JS Application on Nginx, Connect Domain","Oax1SCH0fpo"],
+  i:["Containerizing a MERN Stack Application","XD7hMIJSn64"],
+  j:["Deploy Dockerized Django app on AWS EC2","bZqLeiid5ZM"]
+};
+const PRE="ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് ", SUF=" മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക";
+const DATA = {
+  title:"AWS Deployment Master Checklist",
+  subtitle:"EC2, Docker, S3, MongoDB Atlas, Nginx, HTTPS and CI/CD, step by step.",
+  /* item: [sl_no, topic, action, videoKey, pause-instruction (optional)] */
+  sections:[
+  {t:"A. AWS EC2 Setup",items:[
+   [1,"EC2 Instance Creation","AWS Console-ൽ കയറി പുതിയ Ubuntu EC2 Instance ക്രിയേറ്റ് ചെയ്യുക.","a"],
+   [2,"Instance Type and Storage Selection","t2.micro/t3.micro (Free Tier) തിരഞ്ഞെടുത്ത് ആവശ്യത്തിന് Storage (8GB/30GB) നൽകുക.","a"],
+   [3,"Key Pair Creation",".pem കീ ഫൈൽ ഡൗൺലോഡ് ചെയ്ത് സുരക്ഷിതമായി സൂക്ഷിക്കുക.","b"],
+   [4,"Security Groups Configuration","Port 22 (SSH), Port 80 (HTTP), Port 443 (HTTPS), ഒപ്പം നിങ്ങളുടെ App Port (ഉദാ: 5000/3000) എന്നിവ ഓപ്പൺ ചെയ്യുക.","c"],
+   [5,"Elastic IP Allocation and Association","സ്റ്റാറ്റിക് IP ലഭിക്കാൻ Elastic IP അലോക്കേറ്റ് ചെയ്ത് EC2-മായി Associate ചെയ്യുക.","a","ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത്, AWS Console-ൽ Elastic IP സെക്ഷൻ വഴി ചെയ്ത്"+SUF],
+   [6,"SSH Connection Using Windows PowerShell","Windows PowerShell വഴി .pem കീ ഉപയോഗിച്ച് സർവറിലേക്ക് കണക്റ്റ് ചെയ്യുക (ssh -i \"key.pem\" ubuntu@IP).","b"],
+   [7,"Ubuntu Server Basics and Updates","സർവറിൽ കയറിയ ശേഷം sudo apt update && sudo apt upgrade -y നൽകി അപ്ഡേറ്റ് ചെയ്യുക.","c"]
+  ]},
+  {t:"B. Server and Docker Setup",items:[
+   [8,"Git Installation and GitHub Repository Clone","സർവറിൽ Git ഇൻസ്റ്റാൾ ചെയ്ത് നിങ്ങളുടെ പ്രൊജക്റ്റ് റിപ്പോസിറ്ററി ക്ലോൺ ചെയ്യുക.","d"],
+   [9,"Docker Installation on EC2","ഔദ്യോഗിക കമാൻഡുകൾ ഉപയോഗിച്ച് Docker ഇൻസ്റ്റാൾ ചെയ്യുക.","a"],
+   [10,"Docker Permissions and Service Configuration","sudo usermod -aG docker $USER നൽകി പെർമിഷൻ സെറ്റ് ചെയ്യുക.","a"],
+   [11,"Dockerfile and .dockerignore Review","പ്രൊജക്റ്റിൽ ഒപ്റ്റിമൈസ് ചെയ്ത Dockerfile ഉം .dockerignore ഉം ഉണ്ടെന്ന് ഉറപ്പുവരുത്തുക.","e"],
+   [12,"Production Environment Variables Configuration","സർവറിൽ .env ഫൈൽ നിർമ്മിച്ച് പ്രൊഡക്ഷൻ വേരിയബിളുകൾ നൽകുക.","f","ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത്, നിങ്ങളുടെ പ്രൊജക്റ്റിന്റെ .env കോൺഫിഗർ ചെയ്ത ശേഷം"+SUF],
+   [13,"Docker Image Build","docker build -t my-app . കമാൻഡ് വഴി ഇമേജ് ബിൽഡ് ചെയ്യുക.","e"],
+   [14,"Docker Container Run","docker run -d -p 5000:5000 --env-file .env my-app കമാൻഡ് വഴി കണ്ടെയ്നർ റൺ ചെയ്യുക.","a"],
+   [15,"Application Port and Networking Configuration","പോർട്ടുകൾ ശരിയായി മാപ്പ് ചെയ്തിട്ടുണ്ടോ എന്ന് docker ps വഴി പരിശോധിക്കുക.","a"],
+   [16,"Container Restart Policy","--restart always ഫ്ലാഗ് ഉപയോഗിച്ച് കണ്ടെയ്നർ ഓട്ടോ-റീസ്റ്റാർട്ട് സെറ്റ് ചെയ്യുക.","e",PRE+"ഡെവലപ്പർ ഡോക്യുമെന്റേഷൻ നോക്കി ഇത് കോഡിൽ അപ്ഡേറ്റ് ചെയ്ത ശേഷം"+SUF]
+  ]},
+  {t:"C. AWS IAM and S3",items:[
+   [17,"EC2-നുള്ള S3 IAM Policy തയ്യാറാക്കുക","AWS Console-ൽ S3 ബക്കറ്റ് ആക്സസ് ചെയ്യാൻ ആവശ്യമായ JSON Policy തയ്യാറാക്കുക.","b",PRE+"AWS IAM പോളിസി ക്രിയേറ്റ് ചെയ്ത ശേഷം"+SUF],
+   [18,"EC2 IAM Role സൃഷ്ടിക്കുക","AWS IAM-ൽ പോയി EC2 സർവീസിനായി പുതിയ Role ക്രിയേറ്റ് ചെയ്യുക.","b",PRE+"റോൾ സെറ്റ് ചെയ്ത ശേഷം"+SUF],
+   [19,"IAM Role EC2-യോട് attach ചെയ്യുക","ക്രിയേറ്റ് ചെയ്ത IAM Role നിങ്ങളുടെ EC2 ഇൻസ്റ്റൻസുമായി Attach ചെയ്യുക.","b",PRE+"അറ്റാച്ച്മെന്റ് പൂർത്തിയാക്കി"+SUF],
+   [20,"Backend AWS SDK-യിൽ IAM Role credentials ഉപയോഗിക്കുക","കോഡിൽ Explicit Access Keys എഴുതുന്നതിന് പകരം AWS SDK-യുടെ Default Credential Provider Chain ഉപയോഗിക്കുക.","d",PRE+"കോഡ് മോഡിഫൈ ചെയ്ത ശേഷം"+SUF],
+   [21,"S3 Upload, Download, Access Permissions എന്നിവ പരിശോധിക്കുക","ആപ്പിൽ നിന്ന് ഫയൽ അപ്‌ലോഡ് ചെയ്ത് വർക്ക് ചെയ്യുന്നുണ്ടോ എന്ന് ടെസ്റ്റ് ചെയ്യുക.","d",PRE+"ടെസ്റ്റിംഗ് നടത്തിയ ശേഷം"+SUF],
+   [22,"പഴയ S3 IAM User keys നീക്കുന്നതിന് മുമ്പ് Role access ഉറപ്പാക്കുക","സെക്യൂരിറ്റിക്കായി പഴയ ആക്സസ് കീകൾ ഡിലീറ്റ് ചെയ്യുന്നതിന് മുൻപ് റോൾ വഴി ആക്സസ് കിട്ടുന്നുണ്ടെന്ന് ഉറപ്പുവരുത്തുക.","d",PRE+"സുരക്ഷാ പരിശോധന നടത്തിയ ശേഷം"+SUF]
+  ]},
+  {t:"D. MongoDB Atlas and Production Configuration",items:[
+   [23,"MongoDB Atlas Network Access-ൽ EC2 Elastic IP configure ചെയ്യുക","MongoDB Atlas-ൽ നിങ്ങളുടെ EC2-ന്റെ Elastic IP Whitelist ചെയ്യുക (0.0.0.0/0 ഒഴിവാക്കുക).","f",PRE+"Atlas IP Access List കോൺഫിഗർ ചെയ്ത ശേഷം"+SUF],
+   [24,"Production MONGODB_URI configure ചെയ്യുക","പ്രൊഡക്ഷൻ ഡാറ്റാബേസ് കണക്ഷൻ സ്ട്രിംഗ് .env-ൽ അപ്ഡേറ്റ് ചെയ്യുക.","f"],
+   [25,"JWT, Payment, Email തുടങ്ങിയ Environment Variables configure ചെയ്യുക","Razorpay, JWT Secret, Mail credentials തുടങ്ങിയവ പ്രൊഡക്ഷൻ വാല്യൂസ് നൽകി സെറ്റ് ചെയ്യുക.","f"],
+   [26,"Secrets സുരക്ഷിതമായി സൂക്ഷിക്കുക",".env ഫൈലുകൾ Git-ൽ പോകാതെ .gitignore ചെയ്തു എന്ന് ഉറപ്പാക്കുക.","d",PRE+"ഗിറ്റ് സ്റ്റാറ്റസ് ചെക്ക് ചെയ്ത ശേഷം"+SUF],
+   [27,"Production CORS, Authentication, Cookies എന്നിവ പരിശോധിക്കുക","ഫ്രണ്ട് എൻഡ് ഡൊമെയ്‌നുമായി കണക്റ്റ് ചെയ്യുമ്പോൾ CORS ഉം Secure Cookies ഉം കറക്റ്റ് ആണോ എന്ന് ടെസ്റ്റ് ചെയ്യുക.","c",PRE+"കോഡ് ടെസ്റ്റ് ചെയ്ത ശേഷം"+SUF]
+  ]},
+  {t:"E. Domain, Nginx and HTTPS",items:[
+   [28,"Domain DNS Configuration","GoDaddy/Namecheap വഴി ഡൊമെയ്‌ന്റെ A Record-ൽ EC2-ന്റെ Elastic IP മാപ്പ് ചെയ്യുക.","h"],
+   [29,"Nginx Installation","സർവറിൽ Nginx വെബ് സർവർ ഇൻസ്റ്റാൾ ചെയ്യുക (sudo apt install nginx).","c"],
+   [30,"Nginx Reverse Proxy Configuration","Nginx-ൽ നിന്ന് വരുന്ന ട്രാഫിക് ഡോക്കർ കണ്ടെയ്നർ പോർട്ടിലേക്ക് (ഉദാ: localhost:5000) തിരിച്ചുവിടാൻ Reverse Proxy കോൺഫിഗർ ചെയ്യുക.","c"],
+   [31,"Let's Encrypt SSL Certificate using Certbot","Certbot ഉപയോഗിച്ച് സൗജന്യ SSL സർട്ടിഫിക്കറ്റ് ജനറേറ്റ് ചെയ്യുക.","c"],
+   [32,"HTTP-to-HTTPS Redirect","Nginx കോൺഫിഗറേഷനിൽ HTTP വരുന്ന ട്രാഫിക് ഓട്ടോമാറ്റിക്കായി HTTPS-ലേക്ക് റീഡയറക്ട് ചെയ്യുക.","c"],
+   [33,"Domain, HTTPS and Backend API Testing","ബ്രൗസറിൽ നിങ്ങളുടെ ഡൊമെയ്‌ൻ അടിച്ച് ലോക്ക് സിംബോളോടെ (HTTPS) ആപ്പ് വർക്ക് ചെയ്യുന്നുണ്ടെന്ന് പരിശോധിക്കുക.","h"]
+  ]},
+  {t:"F. Testing and Security",items:[
+   [34,"Backend API Testing","Postman അല്ലെങ്കിൽ Browser വഴി API എൻഡ്പോയിന്റുകൾ ടെസ്റ്റ് ചെയ്യുക.","c",PRE+"API ടെസ്റ്റ് ചെയ്ത ശേഷം"+SUF],
+   [35,"Login and Authentication Testing","Google OAuth/JWT ലോഗിൻ ഫ്ലോകൾ പ്രൊഡക്ഷൻ ഡൊമെയ്‌നിൽ വർക്ക് ചെയ്യുന്നുണ്ടോ എന്ന് നോക്കുക.","c",PRE+"ലോഗിൻ ടെസ്റ്റ് ചെയ്ത ശേഷം"+SUF],
+   [36,"S3 File Upload and Access Testing","പ്രൊഡക്ഷൻ ആപ്പിൽ നിന്ന് ഫയലുകൾ അപ്‌ലോഡ് ചെയ്ത് വ്യൂ ചെയ്യാൻ പറ്റുന്നുണ്ടെന്ന് ഉറപ്പുവരുത്തുക.","d",PRE+"S3 ഫങ്ഷണാലിറ്റി ചെക്ക് ചെയ്ത ശേഷം"+SUF],
+   [37,"Docker and Nginx Logs പരിശോധിക്കുക","docker logs, /var/log/nginx/error.log എന്നിവ പരിശോധിച്ച് എററുകൾ ഇല്ലെന്ന് ഉറപ്പുവരുത്തുക.","c"],
+   [38,"Security Groups and IAM Permissions Review","ആവശ്യമില്ലാത്ത പോർട്ടുകൾ തുറന്നിട്ടില്ലെന്നും ലീസ്സ്റ്റ് പ്രിവിലേജ് പ്രിൻസിപ്പൽ ആണെന്നും ഒപ്പിച്ചു നോക്കുക.","b",PRE+"സെക്യൂരിറ്റി റിവ്യൂ ചെയ്ത ശേഷം"+SUF],
+   [39,"CloudWatch Monitoring and Billing Alerts","AWS CloudWatch-ൽ ബില്ലിംഗ് അലേർട്ടുകൾ സെറ്റ് ചെയ്യുക.","a",PRE+"AWS Billing Alert കോൺഫിഗർ ചെയ്ത ശേഷം"+SUF],
+   [40,"MongoDB Atlas Backup and S3 Data Protection","MongoDB Atlas Automated Backups എനേബിൾ ചെയ്യുക.","e",PRE+"ഡാറ്റാബേസ് ബാക്കപ്പ് സെറ്റപ്പ് ചെയ്ത ശേഷം"+SUF]
+  ]},
+  {t:"G. Docker ഉപയോഗിച്ച് Manual Updates",items:[
+   [41,"ആദ്യ Deployment വിജയകരമാണെന്ന് ഉറപ്പാക്കുക","നിലവിലെ ലൈവ് ആപ്പ് സ്റ്റേബിൾ ആണെന്ന് ഉറപ്പുവരുത്തുക.","e"],
+   [42,"ഒരു ചെറിയ Code Change വരുത്തുക","ലോക്കൽ കോഡിൽ ചെറിയൊരു മാറ്റം (ഉദാ: ടെക്സ്റ്റ് മാറ്റം) വരുത്തുക.","e"],
+   [43,"GitHub-ലേക്ക് Commit and Push ചെയ്യുക","മാറ്റങ്ങൾ ഗിറ്റിലേക്ക് പുഷ് ചെയ്യുക (git add ., git commit, git push).","b"],
+   [44,"EC2-യിൽ Latest Code Pull ചെയ്യുക","സർവറിൽ കയറി git pull ചെയ്യുക.","e"],
+   [45,"Docker Image Rebuild ചെയ്യുക","പുതിയ കോഡ് വെച്ച് ഇമേജ് റീബിൽഡ് ചെയ്യുക.","e"],
+   [46,"പഴയ Container മാറ്റി പുതിയ Container Run ചെയ്യുക","പഴയ കണ്ടെയ്നർ സ്റ്റോപ്പ്/റിമൂവ് ചെയ്ത് പുതിയത് റൺ ചെയ്യുക.","e"],
+   [47,"Update Verification and Rollback Practice","അപ്ഡേറ്റ് ആയെന്ന് സൈറ്റിൽ കയറി നോക്കി ഉറപ്പുവരുത്തുക.","e"]
+  ]},
+  {t:"H. Docker Compose",items:[
+   [48,"Docker Compose Basics","മൾട്ടി-കണ്ടെയ്നർ ആപ്പുകൾ മാനേജ് ചെയ്യാൻ Docker Compose-ന്റെ അടിസ്ഥാനങ്ങൾ മനസ്സിലാക്കുക.","i"],
+   [49,"compose.yaml തയ്യാറാക്കുക","സർവീസുകൾ, പോർട്ടുകൾ, വോള്യങ്ങൾ എന്നിവ ഉൾപ്പെടുത്തി compose.yaml ഫൈൽ എഴുതുക.","i"],
+   [50,"Compose ഉപയോഗിച്ച് ആദ്യ Deployment നടത്തുക","docker compose up -d --build കമാൻഡ് വഴി ആപ്പ് ഡിപ്ലോയ് ചെയ്യുക.","i"],
+   [51,"Compose ഉപയോഗിച്ച് Code Updates നടത്തുക","കോഡ് മാറ്റങ്ങൾക്ക് ശേഷം ഒറ്റ കമാൻഡിൽ അപ്ഡേറ്റ് ചെയ്യുക.","i"],
+   [52,"Compose Logs, Status and Restart പരിശോധിക്കുക","docker compose logs -f വഴി സ്റ്റാറ്റസ് ചെക്ക് ചെയ്യുക.","i"],
+   [53,"പഴയ Version-ലേക്ക് Rollback ചെയ്യുന്നത് പരിശീലിക്കുക","ആവശ്യമെങ്കിൽ പ്രീവിയസ് ടാഗ് ഉപയോഗിച്ച് റോൾബാക്ക് ചെയ്യുക.","i",PRE+"റോൾബാക്ക് ടെസ്റ്റ് ചെയ്ത ശേഷം"+SUF]
+  ]},
+  {t:"I. CI/CD Pipeline",items:[
+   [54,"GitHub Actions Basics","YAML വർക്ക്ഫ്ലോ ഫൈലുകൾ ഉപയോഗിച്ച് CI/CD ഓട്ടോമേഷന്റെ അടിസ്ഥാനങ്ങൾ പഠിക്കുക.","g"],
+   [55,"GitHub Actions ഉപയോഗിച്ച് Docker Image Build ചെയ്യുക","ഗിറ്റ്‌ഹബ് ആക്ഷൻസ് റണ്ണറിൽ ഡോക്കർ ഇമേജ് ബിൽഡ് ചെയ്യുന്നതിനുള്ള സ്റ്റെപ്പുകൾ എഴുതുക.","j"],
+   [56,"Amazon ECR പോലുള്ള Image Registry ഉപയോഗിക്കുക","ബിൽഡ് ചെയ്ത ഇമേജ് AWS ECR-ലേക്ക് Push ചെയ്യുന്ന കോൺഫിഗറേഷൻ ചെയ്യുക.","e"],
+   [57,"EC2-യിലേക്കുള്ള Automated Deployment സജ്ജമാക്കുക","GitHub-ലേക്ക് Push ചെയ്യുമ്പോൾ ആട്ടോമാറ്റിക്കായി EC2 സർവറിൽ കോഡ് അപ്ഡേറ്റ് ആയി ആപ്പ് റീസ്റ്റാർട്ട് ആകുന്ന വർക്ക്ഫ്ലോ സെറ്റ് ചെയ്യുക.","g"],
+   [58,"Deployment Verification and Rollback","ഗിറ്റിലേക്ക് കോഡ് പുഷ് ചെയ്ത് പൈപ്പ്‌ലൈൻ വഴി ആപ്പ് ലൈവ് ആകുന്നത് പൂർണ്ണമായി ടെസ്റ്റ് ചെയ്യുക.","g"]
+  ]}
+  ]
+};
+
+/* ---------- Storage (safe) ---------- */
+const KEY="aws-deploy-checklist-v1", TKEY="aws-deploy-theme";
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){}
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
+const get=id=>state[id]||(state[id]={done:false,note:""});
+
+/* ---------- Theme ---------- */
+const root=document.documentElement;
+let theme=null;
+try{theme=localStorage.getItem(TKEY)}catch(e){}
+if(!theme)theme=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+root.dataset.theme=theme;
+document.getElementById("theme").onclick=()=>{
+  theme=root.dataset.theme==="dark"?"light":"dark";
+  root.dataset.theme=theme;
+  try{localStorage.setItem(TKEY,theme)}catch(e){}
+};
+
+/* ---------- Render ---------- */
+const CHEV='<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+const TICK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const YT='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3z"/></svg>';
+
+document.getElementById("title").textContent=DATA.title;
+document.getElementById("sub").textContent=DATA.subtitle;
+document.title=DATA.title;
+
+const app=document.getElementById("app");
+const ids=[];
+DATA.sections.forEach(sec=>{
+  const s=document.createElement("section");
+  s.innerHTML=`<div class="sec-head"><h2></h2><span></span></div><div class="list"></div>`;
+  s.querySelector("h2").textContent=sec.t;
+  const list=s.querySelector(".list");
+  sec.items.forEach((it,i)=>{
+    const [id,topic,action,vk,mid]=it, v=VIDEOS[vk];
+    ids.push(id);
+    const el=document.createElement("div");
+    el.className="item"; el.dataset.id=id;
+    el.innerHTML=`
+      <div class="row">
+        <button class="check" aria-label="Mark complete"><i>${TICK}</i></button>
+        <button class="toggle" aria-expanded="false">
+          <span class="num">${i+1}</span><span class="topic"></span><span class="dot"></span>${CHEV}
+        </button>
+      </div>
+      <div class="drawer"><div><div class="body">
+        <p class="action"></p>
+        ${mid?'<p class="hint"></p>':''}
+        <a class="yt" target="_blank" rel="noopener">${YT}<span></span></a>
+        <textarea placeholder="Write your notes here..." aria-label="Notes"></textarea>
+        <div class="actions">
+          <button class="save"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Save notes</button>
+          <span class="saved">Saved</span>
+        </div>
+      </div></div></div>`;
+    el.querySelector(".topic").textContent=topic;
+    el.querySelector(".action").textContent=action;
+    if(mid)el.querySelector(".hint").textContent=mid;
+    const a=el.querySelector(".yt");
+    a.href="https://www.youtube.com/watch?v="+v[1];
+    a.querySelector("span").textContent=v[0];
+    const ta=el.querySelector("textarea");
+    ta.value=get(id).note;
+    sync(el);
+    list.appendChild(el);
+  });
+  s.dataset.total=sec.items.length;
+  app.appendChild(s);
+});
+
+function sync(el){
+  const st=get(+el.dataset.id);
+  el.classList.toggle("done",st.done);
+  el.classList.toggle("has-note",!!st.note.trim());
+  el.querySelector(".check").setAttribute("aria-pressed",st.done);
+}
+
+/* ---------- Progress & filter ---------- */
+let filter="all";
+function update(){
+  const total=ids.length, done=ids.filter(i=>get(i).done).length;
+  document.getElementById("fill").style.width=(done/total*100)+"%";
+  document.getElementById("ptxt").textContent=`${done} of ${total} completed`;
+  let shown=0;
+  app.querySelectorAll("section").forEach(sec=>{
+    let vis=0,dn=0;
+    sec.querySelectorAll(".item").forEach(el=>{
+      const d=get(+el.dataset.id).done; if(d)dn++;
+      const show=filter==="all"||(filter==="done"?d:!d);
+      el.hidden=!show; if(show)vis++;
+    });
+    sec.hidden=!vis; shown+=vis;
+    sec.querySelector(".sec-head span").textContent=`${dn}/${sec.dataset.total}`;
+  });
+  document.getElementById("empty").style.display=shown?"none":"block";
+}
+document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+  filter=c.dataset.f;
+  document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===c));
+  update();
+});
+
+/* ---------- Events ---------- */
+app.addEventListener("click",e=>{
+  const el=e.target.closest(".item"); if(!el)return;
+  const id=+el.dataset.id;
+  if(e.target.closest(".check")){
+    const st=get(id); st.done=!st.done; persist(); sync(el); update();
+  }else if(e.target.closest(".toggle")){
+    const open=el.classList.toggle("open");
+    el.querySelector(".toggle").setAttribute("aria-expanded",open);
+  }else if(e.target.closest(".save")){
+    get(id).note=el.querySelector("textarea").value; persist(); sync(el);
+    const m=el.querySelector(".saved"); m.classList.add("show");
+    clearTimeout(m._t); m._t=setTimeout(()=>m.classList.remove("show"),1800);
+  }
+});
+update();
+</script>
+</body>
+</html>

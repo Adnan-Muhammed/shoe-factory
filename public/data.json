@@ -1,0 +1,477 @@
+
+{
+  "title": "AWS Deployment Master Checklist",
+  "subtitle": "EC2, Docker, S3, MongoDB Atlas, Nginx, HTTPS and CI/CD, step by step.",
+  "sections": [
+    {
+      "section_title": "A. AWS EC2 Setup",
+      "items": [
+        {
+          "sl_no": 1,
+          "topic": "EC2 Instance Creation",
+          "action": "AWS Console-ൽ കയറി പുതിയ Ubuntu EC2 Instance ക്രിയേറ്റ് ചെയ്യുക.",
+          "youtube_title": "Run Docker Containers on AWS EC2 - EC2 Launch",
+          "youtube_url": "https://www.youtube.com/watch?v=v8zhVcgyl6Q"
+        },
+        {
+          "sl_no": 2,
+          "topic": "Instance Type and Storage Selection",
+          "action": "t2.micro/t3.micro (Free Tier) തിരഞ്ഞെടുത്ത് ആവശ്യത്തിന് Storage (8GB/30GB) നൽകുക.",
+          "youtube_title": "Run Docker Containers on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=v8zhVcgyl6Q"
+        },
+        {
+          "sl_no": 3,
+          "topic": "Key Pair Creation",
+          "action": ".pem കീ ഫൈൽ ഡൗൺലോഡ് ചെയ്ത് സുരക്ഷിതമായി സൂക്ഷിക്കുക.",
+          "youtube_title": "How to Deploy Your Application on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=bZqLeiid5ZM"
+        },
+        {
+          "sl_no": 4,
+          "topic": "Security Groups Configuration",
+          "action": "Port 22 (SSH), Port 80 (HTTP), Port 443 (HTTPS), ഒപ്പം നിങ്ങളുടെ App Port (ഉദാ: 5000/3000) എന്നിവ ഓപ്പൺ ചെയ്യുക.",
+          "youtube_title": "Full Node.js Deployment - Nginx, SSL With Lets Encrypt",
+          "youtube_url": "https://www.youtube.com/watch?v=ofBFl4M4BFk"
+        },
+        {
+          "sl_no": 5,
+          "topic": "Elastic IP Allocation and Association",
+          "action": "സ്റ്റാറ്റിക് IP ലഭിക്കാൻ Elastic IP അലോക്കേറ്റ് ചെയ്ത് EC2-മായി Associate ചെയ്യുക.",
+          "youtube_title": "Run Docker Containers on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=v8zhVcgyl6Q",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത്, AWS Console-ൽ Elastic IP സെക്ഷൻ വഴി ചെയ്ത് മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 6,
+          "topic": "SSH Connection Using Windows PowerShell",
+          "action": "Windows PowerShell വഴി .pem കീ ഉപയോഗിച്ച് സർവറിലേക്ക് കണക്റ്റ് ചെയ്യുക (ssh -i \"key.pem\" ubuntu@IP).",
+          "youtube_title": "How to Deploy Your Application on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=bZqLeiid5ZM"
+        },
+        {
+          "sl_no": 7,
+          "topic": "Ubuntu Server Basics and Updates",
+          "action": "സർവറിൽ കയറിയ ശേഷം sudo apt update && sudo apt upgrade -y നൽകി അപ്ഡേറ്റ് ചെയ്യുക.",
+          "youtube_title": "Full Node.js Deployment - Nginx, SSL With Lets Encrypt",
+          "youtube_url": "https://www.youtube.com/watch?v=ofBFl4M4BFk"
+        }
+      ]
+    },
+    {
+      "section_title": "B. Server and Docker Setup",
+      "items": [
+        {
+          "sl_no": 8,
+          "topic": "Git Installation and GitHub Repository Clone",
+          "action": "സർവറിൽ Git ഇൻസ്റ്റാൾ ചെയ്ത് നിങ്ങളുടെ പ്രൊജക്റ്റ് റിപ്പോസിറ്ററി ക്ലോൺ ചെയ്യുക.",
+          "youtube_title": "Complete Deployment | Docker | AWS | EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=wGjyuDvvRx4"
+        },
+        {
+          "sl_no": 9,
+          "topic": "Docker Installation on EC2",
+          "action": "ഔദ്യോഗിക കമാൻഡുകൾ ഉപയോഗിച്ച് Docker ഇൻസ്റ്റാൾ ചെയ്യുക.",
+          "youtube_title": "Run Docker Containers on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=v8zhVcgyl6Q"
+        },
+        {
+          "sl_no": 10,
+          "topic": "Docker Permissions and Service Configuration",
+          "action": "sudo usermod -aG docker $USER നൽകി പെർമിഷൻ സെറ്റ് ചെയ്യുക.",
+          "youtube_title": "Run Docker Containers on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=v8zhVcgyl6Q"
+        },
+        {
+          "sl_no": 11,
+          "topic": "Dockerfile and .dockerignore Review",
+          "action": "പ്രൊജക്റ്റിൽ ഒപ്റ്റിമൈസ് ചെയ്ത Dockerfile ഉം .dockerignore ഉം ഉണ്ടെന്ന് ഉറപ്പുവരുത്തുക.",
+          "youtube_title": "Complete Docker + AWS | Deploy Your First Project",
+          "youtube_url": "https://www.youtube.com/watch?v=Uf6PXnagtsg"
+        },
+        {
+          "sl_no": 12,
+          "topic": "Production Environment Variables Configuration",
+          "action": "സർവറിൽ .env ഫൈൽ നിർമ്മിച്ച് പ്രൊഡക്ഷൻ വേരിയബിളുകൾ നൽകുക.",
+          "youtube_title": "Full Node.js Deployment to AWS - FREE SSL, NGINX",
+          "youtube_url": "https://www.youtube.com/watch?v=yhiuV6cqkNs",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത്, നിങ്ങളുടെ പ്രൊജക്റ്റിന്റെ .env കോൺഫിഗർ ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 13,
+          "topic": "Docker Image Build",
+          "action": "docker build -t my-app . കമാൻഡ് വഴി ഇമേജ് ബിൽഡ് ചെയ്യുക.",
+          "youtube_title": "Complete Docker + AWS | Deploy Your First Project",
+          "youtube_url": "https://www.youtube.com/watch?v=Uf6PXnagtsg"
+        },
+        {
+          "sl_no": 14,
+          "topic": "Docker Container Run",
+          "action": "docker run -d -p 5000:5000 --env-file .env my-app കമാൻഡ് വഴി കണ്ടെയ്നർ റൺ ചെയ്യുക.",
+          "youtube_title": "Run Docker Containers on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=v8zhVcgyl6Q"
+        },
+        {
+          "sl_no": 15,
+          "topic": "Application Port and Networking Configuration",
+          "action": "പോർട്ടുകൾ ശരിയായി മാപ്പ് ചെയ്തിട്ടുണ്ടോ എന്ന് docker ps വഴി പരിശോധിക്കുക.",
+          "youtube_title": "Run Docker Containers on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=v8zhVcgyl6Q"
+        },
+        {
+          "sl_no": 16,
+          "topic": "Container Restart Policy",
+          "action": "--restart always ഫ്ലാഗ് ഉപയോഗിച്ച് കണ്ടെയ്നർ ഓട്ടോ-റീസ്റ്റാർട്ട് സെറ്റ് ചെയ്യുക.",
+          "youtube_title": "Complete Docker + AWS | Deploy Your First Project",
+          "youtube_url": "https://www.youtube.com/watch?v=Uf6PXnagtsg",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് ഡെവലപ്പർ ഡോക്യുമെന്റേഷൻ നോക്കി ഇത് കോഡിൽ അപ്ഡേറ്റ് ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        }
+      ]
+    },
+    {
+      "section_title": "C. AWS IAM and S3",
+      "items": [
+        {
+          "sl_no": 17,
+          "topic": "EC2-നുള്ള S3 IAM Policy തയ്യാറാക്കുക",
+          "action": "AWS Console-ൽ S3 ബക്കറ്റ് ആക്സസ് ചെയ്യാൻ ആവശ്യമായ JSON Policy തയ്യാറാക്കുക.",
+          "youtube_title": "How to Deploy Your Application on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=bZqLeiid5ZM",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് AWS IAM പോളിസി ക്രിയേറ്റ് ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 18,
+          "topic": "EC2 IAM Role സൃഷ്ടിക്കുക",
+          "action": "AWS IAM-ൽ പോയി EC2 സർവീസിനായി പുതിയ Role ക്രിയേറ്റ് ചെയ്യുക.",
+          "youtube_title": "How to Deploy Your Application on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=bZqLeiid5ZM",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് റോൾ സെറ്റ് ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 19,
+          "topic": "IAM Role EC2-യോട് attach ചെയ്യുക",
+          "action": "ക്രിയേറ്റ് ചെയ്ത IAM Role നിങ്ങളുടെ EC2 ഇൻസ്റ്റൻസുമായി Attach ചെയ്യുക.",
+          "youtube_title": "How to Deploy Your Application on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=bZqLeiid5ZM",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് അറ്റാച്ച്മെന്റ് പൂർത്തിയാക്കി മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 20,
+          "topic": "Backend AWS SDK-യിൽ IAM Role credentials ഉപയോഗിക്കുക",
+          "action": "കോഡിൽ Explicit Access Keys എഴുതുന്നതിന് പകരം AWS SDK-യുടെ Default Credential Provider Chain ഉപയോഗിക്കുക.",
+          "youtube_title": "Complete Deployment | Docker | AWS | EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=wGjyuDvvRx4",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് കോഡ് മോഡിഫൈ ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 21,
+          "topic": "S3 Upload, Download, Access Permissions എന്നിവ പരിശോധിക്കുക",
+          "action": "ആപ്പിൽ നിന്ന് ഫയൽ അപ്‌ലോഡ് ചെയ്ത് വർക്ക് ചെയ്യുന്നുണ്ടോ എന്ന് ടെസ്റ്റ് ചെയ്യുക.",
+          "youtube_title": "Complete Deployment | Docker | AWS | EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=wGjyuDvvRx4",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് ടെസ്റ്റിംഗ് നടത്തിയ ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 22,
+          "topic": "പഴയ S3 IAM User keys നീക്കുന്നതിന് മുമ്പ് Role access ഉറപ്പാക്കുക",
+          "action": "സെക്യൂരിറ്റിക്കായി പഴയ ആക്സസ് കീകൾ ഡിലീറ്റ് ചെയ്യുന്നതിന് മുൻപ് റോൾ വഴി ആക്സസ് കിട്ടുന്നുണ്ടെന്ന് ഉറപ്പുവരുത്തുക.",
+          "youtube_title": "Complete Deployment | Docker | AWS | EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=wGjyuDvvRx4",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് സുരക്ഷാ പരിശോധന നടത്തിയ ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        }
+      ]
+    },
+    {
+      "section_title": "D. MongoDB Atlas and Production Configuration",
+      "items": [
+        {
+          "sl_no": 23,
+          "topic": "MongoDB Atlas Network Access-ൽ EC2 Elastic IP configure ചെയ്യുക",
+          "action": "MongoDB Atlas-ൽ നിങ്ങളുടെ EC2-ന്റെ Elastic IP Whitelist ചെയ്യുക (0.0.0.0/0 ഒഴിവാക്കുക).",
+          "youtube_title": "Full Node.js Deployment to AWS - FREE SSL, NGINX",
+          "youtube_url": "https://www.youtube.com/watch?v=yhiuV6cqkNs",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് Atlas IP Access List കോൺഫിഗർ ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 24,
+          "topic": "Production MONGODB_URI configure ചെയ്യുക",
+          "action": "പ്രൊഡക്ഷൻ ഡാറ്റാബേസ് കണക്ഷൻ സ്ട്രിംഗ് .env-ൽ അപ്ഡേറ്റ് ചെയ്യുക.",
+          "youtube_title": "Full Node.js Deployment to AWS - FREE SSL, NGINX",
+          "youtube_url": "https://www.youtube.com/watch?v=yhiuV6cqkNs"
+        },
+        {
+          "sl_no": 25,
+          "topic": "JWT, Payment, Email തുടങ്ങിയ Environment Variables configure ചെയ്യുക",
+          "action": "Razorpay, JWT Secret, Mail credentials തുടങ്ങിയവ പ്രൊഡക്ഷൻ വാല്യൂസ് നൽകി സെറ്റ് ചെയ്യുക.",
+          "youtube_title": "Full Node.js Deployment to AWS - FREE SSL, NGINX",
+          "youtube_url": "https://www.youtube.com/watch?v=yhiuV6cqkNs"
+        },
+        {
+          "sl_no": 26,
+          "topic": "Secrets സുരക്ഷിതമായി സൂക്ഷിക്കുക",
+          "action": ".env ഫൈലുകൾ Git-ൽ പോകാതെ .gitignore ചെയ്തു എന്ന് ഉറപ്പാക്കുക.",
+          "youtube_title": "Complete Deployment | Docker | AWS | EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=wGjyuDvvRx4",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് ഗിറ്റ് സ്റ്റാറ്റസ് ചെക്ക് ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 27,
+          "topic": "Production CORS, Authentication, Cookies എന്നിവ പരിശോധിക്കുക",
+          "action": "ഫ്രണ്ട് എൻഡ് ഡൊമെയ്‌നുമായി കണക്റ്റ് ചെയ്യുമ്പോൾ CORS ഉം Secure Cookies ഉം കറക്റ്റ് ആണോ എന്ന് ടെസ്റ്റ് ചെയ്യുക.",
+          "youtube_title": "Full Node.js Deployment - Nginx, SSL With Lets Encrypt",
+          "youtube_url": "https://www.youtube.com/watch?v=ofBFl4M4BFk",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് കോഡ് ടെസ്റ്റ് ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        }
+      ]
+    },
+    {
+      "section_title": "E. Domain, Nginx and HTTPS",
+      "items": [
+        {
+          "sl_no": 28,
+          "topic": "Domain DNS Configuration",
+          "action": "GoDaddy/Namecheap വഴി ഡൊമെയ്‌ന്റെ A Record-ൽ EC2-ന്റെ Elastic IP മാപ്പ് ചെയ്യുക.",
+          "youtube_title": "How to Deploy a Node JS Application on Nginx, Connect Domain",
+          "youtube_url": "https://www.youtube.com/watch?v=Oax1SCH0fpo"
+        },
+        {
+          "sl_no": 29,
+          "topic": "Nginx Installation",
+          "action": "സർവറിൽ Nginx വെബ് സർവർ ഇൻസ്റ്റാൾ ചെയ്യുക (sudo apt install nginx).",
+          "youtube_title": "Full Node.js Deployment - Nginx, SSL With Lets Encrypt",
+          "youtube_url": "https://www.youtube.com/watch?v=ofBFl4M4BFk"
+        },
+        {
+          "sl_no": 30,
+          "topic": "Nginx Reverse Proxy Configuration",
+          "action": "Nginx-ൽ നിന്ന് വരുന്ന ട്രാഫിക് ഡോക്കർ കണ്ടെയ്നർ പോർട്ടിലേക്ക് (ഉദാ: localhost:5000) തിരിച്ചുവിടാൻ Reverse Proxy കോൺഫിഗർ ചെയ്യുക.",
+          "youtube_title": "Full Node.js Deployment - Nginx, SSL With Lets Encrypt",
+          "youtube_url": "https://www.youtube.com/watch?v=ofBFl4M4BFk"
+        },
+        {
+          "sl_no": 31,
+          "topic": "Let's Encrypt SSL Certificate using Certbot",
+          "action": "Certbot ഉപയോഗിച്ച് സൗജന്യ SSL സർട്ടിഫിക്കറ്റ് ജനറേറ്റ് ചെയ്യുക.",
+          "youtube_title": "Full Node.js Deployment - Nginx, SSL With Lets Encrypt",
+          "youtube_url": "https://www.youtube.com/watch?v=ofBFl4M4BFk"
+        },
+        {
+          "sl_no": 32,
+          "topic": "HTTP-to-HTTPS Redirect",
+          "action": "Nginx കോൺഫിഗറേഷനിൽ HTTP വരുന്ന ട്രാഫിക് ഓട്ടോമാറ്റിക്കായി HTTPS-ലേക്ക് റീഡയറക്ട് ചെയ്യുക.",
+          "youtube_title": "Full Node.js Deployment - Nginx, SSL With Lets Encrypt",
+          "youtube_url": "https://www.youtube.com/watch?v=ofBFl4M4BFk"
+        },
+        {
+          "sl_no": 33,
+          "topic": "Domain, HTTPS and Backend API Testing",
+          "action": "ബ്രൗസറിൽ നിങ്ങളുടെ ഡൊമെയ്‌ൻ അടിച്ച് ലോക്ക് സിംബോളോടെ (HTTPS) ആപ്പ് വർക്ക് ചെയ്യുന്നുണ്ടെന്ന് പരിശോധിക്കുക.",
+          "youtube_title": "How to Deploy a Node JS Application on Nginx, Connect Domain",
+          "youtube_url": "https://www.youtube.com/watch?v=Oax1SCH0fpo"
+        }
+      ]
+    },
+    {
+      "section_title": "F. Testing and Security",
+      "items": [
+        {
+          "sl_no": 34,
+          "topic": "Backend API Testing",
+          "action": "Postman അല്ലെങ്കിൽ Browser വഴി API എൻഡ്പോയിന്റുകൾ ടെസ്റ്റ് ചെയ്യുക.",
+          "youtube_title": "Full Node.js Deployment - Nginx, SSL With Lets Encrypt",
+          "youtube_url": "https://www.youtube.com/watch?v=ofBFl4M4BFk",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് API ടെസ്റ്റ് ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 35,
+          "topic": "Login and Authentication Testing",
+          "action": "Google OAuth/JWT ലോഗിൻ ഫ്ലോകൾ പ്രൊഡക്ഷൻ ഡൊമെയ്‌നിൽ വർക്ക് ചെയ്യുന്നുണ്ടോ എന്ന് നോക്കുക.",
+          "youtube_title": "Full Node.js Deployment - Nginx, SSL With Lets Encrypt",
+          "youtube_url": "https://www.youtube.com/watch?v=ofBFl4M4BFk",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് ലോഗിൻ ടെസ്റ്റ് ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 36,
+          "topic": "S3 File Upload and Access Testing",
+          "action": "പ്രൊഡക്ഷൻ ആപ്പിൽ നിന്ന് ഫയലുകൾ അപ്‌ലോഡ് ചെയ്ത് വ്യൂ ചെയ്യാൻ പറ്റുന്നുണ്ടെന്ന് ഉറപ്പുവരുത്തുക.",
+          "youtube_title": "Complete Deployment | Docker | AWS | EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=wGjyuDvvRx4",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് S3 ഫങ്ഷണാലിറ്റി ചെക്ക് ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 37,
+          "topic": "Docker and Nginx Logs പരിശോധിക്കുക",
+          "action": "docker logs, /var/log/nginx/error.log എന്നിവ പരിശോധിച്ച് എററുകൾ ഇല്ലെന്ന് ഉറപ്പുവരുത്തുക.",
+          "youtube_title": "Full Node.js Deployment - Nginx, SSL With Lets Encrypt",
+          "youtube_url": "https://www.youtube.com/watch?v=ofBFl4M4BFk"
+        },
+        {
+          "sl_no": 38,
+          "topic": "Security Groups and IAM Permissions Review",
+          "action": "ആവശ്യമില്ലാത്ത പോർട്ടുകൾ തുറന്നിട്ടില്ലെന്നും ലീസ്സ്റ്റ് പ്രിവിലേജ് പ്രിൻസിപ്പൽ ആണെന്നും ഒപ്പിച്ചു നോക്കുക.",
+          "youtube_title": "How to Deploy Your Application on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=bZqLeiid5ZM",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് സെക്യൂരിറ്റി റിവ്യൂ ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 39,
+          "topic": "CloudWatch Monitoring and Billing Alerts",
+          "action": "AWS CloudWatch-ൽ ബില്ലിംഗ് അലേർട്ടുകൾ സെറ്റ് ചെയ്യുക.",
+          "youtube_title": "Run Docker Containers on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=v8zhVcgyl6Q",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് AWS Billing Alert കോൺഫിഗർ ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        },
+        {
+          "sl_no": 40,
+          "topic": "MongoDB Atlas Backup and S3 Data Protection",
+          "action": "MongoDB Atlas Automated Backups എനേബിൾ ചെയ്യുക.",
+          "youtube_title": "Complete Docker + AWS | Deploy Your First Project",
+          "youtube_url": "https://www.youtube.com/watch?v=Uf6PXnagtsg",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് ഡാറ്റാബേസ് ബാക്കപ്പ് സെറ്റപ്പ് ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        }
+      ]
+    },
+    {
+      "section_title": "G. Docker ഉപയോഗിച്ച് Manual Updates",
+      "items": [
+        {
+          "sl_no": 41,
+          "topic": "ആദ്യ Deployment വിജയകരമാണെന്ന് ഉറപ്പാക്കുക",
+          "action": "നിലവിലെ ലൈവ് ആപ്പ് സ്റ്റേബിൾ ആണെന്ന് ഉറപ്പുവരുത്തുക.",
+          "youtube_title": "Complete Docker + AWS | Deploy Your First Project",
+          "youtube_url": "https://www.youtube.com/watch?v=Uf6PXnagtsg"
+        },
+        {
+          "sl_no": 42,
+          "topic": "ഒരു ചെറിയ Code Change വരുത്തുക",
+          "action": "ലോക്കൽ കോഡിൽ ചെറിയൊരു മാറ്റം (ഉദാ: ടെക്സ്റ്റ് മാറ്റം) വരുത്തുക.",
+          "youtube_title": "Complete Docker + AWS | Deploy Your First Project",
+          "youtube_url": "https://www.youtube.com/watch?v=Uf6PXnagtsg"
+        },
+        {
+          "sl_no": 43,
+          "topic": "GitHub-ലേക്ക് Commit and Push ചെയ്യുക",
+          "action": "മാറ്റങ്ങൾ ഗിറ്റിലേക്ക് പുഷ് ചെയ്യുക (git add ., git commit, git push).",
+          "youtube_title": "How to Deploy Your Application on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=bZqLeiid5ZM"
+        },
+        {
+          "sl_no": 44,
+          "topic": "EC2-യിൽ Latest Code Pull ചെയ്യുക",
+          "action": "സർവറിൽ കയറി git pull ചെയ്യുക.",
+          "youtube_title": "Complete Docker + AWS | Deploy Your First Project",
+          "youtube_url": "https://www.youtube.com/watch?v=Uf6PXnagtsg"
+        },
+        {
+          "sl_no": 45,
+          "topic": "Docker Image Rebuild ചെയ്യുക",
+          "action": "പുതിയ കോഡ് വെച്ച് ഇമേജ് റീബിൽഡ് ചെയ്യുക.",
+          "youtube_title": "Complete Docker + AWS | Deploy Your First Project",
+          "youtube_url": "https://www.youtube.com/watch?v=Uf6PXnagtsg"
+        },
+        {
+          "sl_no": 46,
+          "topic": "പഴയ Container മാറ്റി പുതിയ Container Run ചെയ്യുക",
+          "action": "പഴയ കണ്ടെയ്നർ സ്റ്റോപ്പ്/റിമൂവ് ചെയ്ത് പുതിയത് റൺ ചെയ്യുക.",
+          "youtube_title": "Complete Docker + AWS | Deploy Your First Project",
+          "youtube_url": "https://www.youtube.com/watch?v=Uf6PXnagtsg"
+        },
+        {
+          "sl_no": 47,
+          "topic": "Update Verification and Rollback Practice",
+          "action": "അപ്ഡേറ്റ് ആയെന്ന് സൈറ്റിൽ കയറി നോക്കി ഉറപ്പുവരുത്തുക.",
+          "youtube_title": "Complete Docker + AWS | Deploy Your First Project",
+          "youtube_url": "https://www.youtube.com/watch?v=Uf6PXnagtsg"
+        }
+      ]
+    },
+    {
+      "section_title": "H. Docker Compose",
+      "items": [
+        {
+          "sl_no": 48,
+          "topic": "Docker Compose Basics",
+          "action": "മൾട്ടി-കണ്ടെയ്നർ ആപ്പുകൾ മാനേജ് ചെയ്യാൻ Docker Compose-ന്റെ അടിസ്ഥാനങ്ങൾ മനസ്സിലാക്കുക.",
+          "youtube_title": "Containerizing a MERN Stack Application",
+          "youtube_url": "https://www.youtube.com/watch?v=XD7hMIJSn64"
+        },
+        {
+          "sl_no": 49,
+          "topic": "compose.yaml തയ്യാറാക്കുക",
+          "action": "സർവീസുകൾ, പോർട്ടുകൾ, വോള്യങ്ങൾ എന്നിവ ഉൾപ്പെടുത്തി compose.yaml ഫൈൽ എഴുതുക.",
+          "youtube_title": "Containerizing a MERN Stack Application",
+          "youtube_url": "https://www.youtube.com/watch?v=XD7hMIJSn64"
+        },
+        {
+          "sl_no": 50,
+          "topic": "Compose ഉപയോഗിച്ച് ആദ്യ Deployment നടത്തുക",
+          "action": "docker compose up -d --build കമാൻഡ് വഴി ആപ്പ് ഡിപ്ലോയ് ചെയ്യുക.",
+          "youtube_title": "Containerizing a MERN Stack Application",
+          "youtube_url": "https://www.youtube.com/watch?v=XD7hMIJSn64"
+        },
+        {
+          "sl_no": 51,
+          "topic": "Compose ഉപയോഗിച്ച് Code Updates നടത്തുക",
+          "action": "കോഡ് മാറ്റങ്ങൾക്ക് ശേഷം ഒറ്റ കമാൻഡിൽ അപ്ഡേറ്റ് ചെയ്യുക.",
+          "youtube_title": "Containerizing a MERN Stack Application",
+          "youtube_url": "https://www.youtube.com/watch?v=XD7hMIJSn64"
+        },
+        {
+          "sl_no": 52,
+          "topic": "Compose Logs, Status and Restart പരിശോധിക്കുക",
+          "action": "docker compose logs -f വഴി സ്റ്റാറ്റസ് ചെക്ക് ചെയ്യുക.",
+          "youtube_title": "Containerizing a MERN Stack Application",
+          "youtube_url": "https://www.youtube.com/watch?v=XD7hMIJSn64"
+        },
+        {
+          "sl_no": 53,
+          "topic": "പഴയ Version-ലേക്ക് Rollback ചെയ്യുന്നത് പരിശീലിക്കുക",
+          "action": "ആവശ്യമെങ്കിൽ പ്രീവിയസ് ടാഗ് ഉപയോഗിച്ച് റോൾബാക്ക് ചെയ്യുക.",
+          "youtube_title": "Containerizing a MERN Stack Application",
+          "youtube_url": "https://www.youtube.com/watch?v=XD7hMIJSn64",
+          "instruction": "ഈ വീഡിയോ അവിടെ പോസ് ചെയ്ത് റോൾബാക്ക് ടെസ്റ്റ് ചെയ്ത ശേഷം മെയിൻ വീഡിയോയിലേക്ക് തിരികെ വരിക"
+        }
+      ]
+    },
+    {
+      "section_title": "I. CI/CD Pipeline",
+      "items": [
+        {
+          "sl_no": 54,
+          "topic": "GitHub Actions Basics",
+          "action": "YAML വർക്ക്ഫ്ലോ ഫൈലുകൾ ഉപയോഗിച്ച് CI/CD ഓട്ടോമേഷന്റെ അടിസ്ഥാനങ്ങൾ പഠിക്കുക.",
+          "youtube_title": "Auto Deploy Nodejs Rest API on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=yhiuV6cqkNs"
+        },
+        {
+          "sl_no": 55,
+          "topic": "GitHub Actions ഉപയോഗിച്ച് Docker Image Build ചെയ്യുക",
+          "action": "ഗിറ്റ്‌ഹബ് ആക്ഷൻസ് റണ്ണറിൽ ഡോക്കർ ഇമേജ് ബിൽഡ് ചെയ്യുന്നതിനുള്ള സ്റ്റെപ്പുകൾ എഴുതുക.",
+          "youtube_title": "Deploy Dockerized Django app on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=bZqLeiid5ZM"
+        },
+        {
+          "sl_no": 56,
+          "topic": "Amazon ECR പോലുള്ള Image Registry ഉപയോഗിക്കുക",
+          "action": "ബിൽഡ് ചെയ്ത ഇമേജ് AWS ECR-ലേക്ക് Push ചെയ്യുന്ന കോൺഫിഗറേഷൻ ചെയ്യുക.",
+          "youtube_title": "Complete Docker + AWS | Deploy Your First Project",
+          "youtube_url": "https://www.youtube.com/watch?v=Uf6PXnagtsg"
+        },
+        {
+          "sl_no": 57,
+          "topic": "EC2-യിലേക്കുള്ള Automated Deployment സജ്ജമാക്കുക",
+          "action": "GitHub-ലേക്ക് Push ചെയ്യുമ്പോൾ ആട്ടോമാറ്റിക്കായി EC2 സർവറിൽ കോഡ് അപ്ഡേറ്റ് ആയി ആപ്പ് റീസ്റ്റാർട്ട് ആകുന്ന വർക്ക്ഫ്ലോ സെറ്റ് ചെയ്യുക.",
+          "youtube_title": "Auto Deploy Nodejs Rest API on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=yhiuV6cqkNs"
+        },
+        {
+          "sl_no": 58,
+          "topic": "Deployment Verification and Rollback",
+          "action": "ഗിറ്റിലേക്ക് കോഡ് പുഷ് ചെയ്ത് പൈപ്പ്‌ലൈൻ വഴി ആപ്പ് ലൈവ് ആകുന്നത് പൂർണ്ണമായി ടെസ്റ്റ് ചെയ്യുക.",
+          "youtube_title": "Auto Deploy Nodejs Rest API on AWS EC2",
+          "youtube_url": "https://www.youtube.com/watch?v=yhiuV6cqkNs"
+        }
+      ]
+    }
+  ]
+}

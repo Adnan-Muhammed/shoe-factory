@@ -16,6 +16,10 @@ const nextConfig = {
         source: '/ai-chat-app-4',
         destination: '/ai-chat-app4.html',
       },
+      {
+        source: '/aws-deploy',
+        destination: '/aws-deploy-checklist.html',
+      },
     ];
   },
 };
