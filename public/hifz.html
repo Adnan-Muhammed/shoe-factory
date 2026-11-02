@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102b25">
+<title>Juz 30 — Amma Juz Tracker</title>
+
+<style>
+:root {
+  --bg:#f4f6f2;
+  --surface:#fff;
+  --ink:#172b25;
+  --muted:#718078;
+  --green:#176b50;
+  --green2:#e7f3ed;
+  --line:#e5ebe6;
+  --shadow:0 12px 35px rgba(24,55,43,.07);
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+
+header {
+  background:linear-gradient(135deg,#102b25,#1d5944);
+  color:white;
+  padding:34px 20px 64px;
+}
+
+.hero { max-width:920px; margin:auto; }
+
+.eyebrow {
+  font-size:12px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:#b8d8c8;
+  font-weight:700;
+}
+
+h1 {
+  font-size:clamp(28px,5vw,42px);
+  margin:10px 0 6px;
+  letter-spacing:-.04em;
+}
+
+.subtitle {
+  color:#d2e4da;
+  margin:0;
+  font-size:15px;
+}
+
+main {
+  max-width:920px;
+  margin:-38px auto 48px;
+  padding:0 16px;
+}
+
+.panel {
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+}
+
+.progress-panel {
+  padding:20px;
+  margin-bottom:18px;
+}
+
+.progress-top {
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  margin-bottom:13px;
+}
+
+.progress-number {
+  font-size:26px;
+  font-weight:800;
+  color:var(--green);
+}
+
+.progress-label {
+  font-size:13px;
+  color:var(--muted);
+}
+
+.track {
+  height:9px;
+  background:#edf1ed;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.fill {
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#176b50,#55a77e);
+  border-radius:20px;
+  transition:width .2s;
+}
+
+.progress-foot {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:10px;
+}
+
+.toolbar {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+
+.search {
+  flex:1 1 220px;
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px 14px;
+  background:white;
+  font:inherit;
+  outline:none;
+}
+
+.search:focus {
+  border-color:#78a991;
+}
+
+select,.reset {
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:11px 13px;
+  background:white;
+  color:var(--ink);
+  font:inherit;
+}
+
+.reset {
+  cursor:pointer;
+  color:#9a443c;
+}
+
+.list { overflow:hidden; }
+
+.list-head {
+  padding:15px 18px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.surah {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:15px 18px;
+  border-bottom:1px solid var(--line);
+}
+
+.surah:last-child { border-bottom:0; }
+
+.surah.done { background:#f4faf6; }
+
+.number {
+  width:36px;
+  height:36px;
+  flex:0 0 36px;
+  border-radius:11px;
+  background:#f0f4f0;
+  display:grid;
+  place-items:center;
+  font-size:13px;
+  font-weight:750;
+  color:#52645a;
+}
+
+.surah.done .number {
+  background:var(--green2);
+  color:var(--green);
+}
+
+.details {
+  min-width:0;
+  flex:1;
+}
+
+.name-row {
+  display:flex;
+  align-items:baseline;
+  gap:9px;
+  flex-wrap:wrap;
+}
+
+.name {
+  font-weight:700;
+  font-size:15px;
+}
+
+.arabic {
+  font-family:"Noto Naskh Arabic","Amiri",serif;
+  font-size:21px;
+  direction:rtl;
+  color:#285c49;
+}
+
+.meta {
+  font-size:12px;
+  color:var(--muted);
+  margin-top:3px;
+}
+
+.entry {
+  width:135px;
+  flex-shrink:0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.ayah-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ayah-input {
+  width:100%;
+  padding:10px 9px;
+  border:1px solid #dce5de;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:700;
+  text-align:center;
+  color:var(--green);
+  outline:none;
+  background:#fff;
+  min-width: 0;
+}
+
+.ayah-input:focus {
+  border-color:var(--green);
+  box-shadow:0 0 0 3px #176b5018;
+}
+
+.ayah-input.invalid {
+  border-color:#d64545;
+  background:#fff5f5;
+}
+
+.mark-btn {
+  border:1px solid var(--green);
+  background:var(--green2);
+  color:var(--green);
+  border-radius:8px;
+  padding:8px 10px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+  transition: background .15s, color .15s;
+}
+
+.mark-btn:hover:not(:disabled) {
+  background:var(--green);
+  color:#fff;
+}
+
+.mark-btn:disabled {
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
+.input-label {
+  font-size:10px;
+  color:var(--muted);
+  text-align:center;
+  margin-top:0;
+}
+
+.surah-progress {
+  height:5px;
+  background:#edf1ed;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:9px;
+}
+
+.surah-progress-fill {
+  height:100%;
+  background:#55a77e;
+  border-radius:10px;
+}
+
+.status {
+  font-size:11px;
+  margin-top:5px;
+  color:var(--muted);
+}
+
+.status.done-text {
+  color:var(--green);
+  font-weight:700;
+}
+
+.empty {
+  padding:35px;
+  text-align:center;
+  color:var(--muted);
+}
+
+footer {
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:20px 8px;
+}
+
+@media(min-width:650px) {
+  .surah { padding:16px 22px; }
+  .progress-panel { padding:23px; }
+  .list-head { padding:16px 22px; }
+  .entry { width:160px; }
+}
+
+@media(max-width:480px) {
+  header { padding-top:27px; }
+
+  .surah {
+    gap:9px;
+    padding:14px 10px;
+  }
+
+  .number {
+    width:31px;
+    height:31px;
+    flex-basis:31px;
+  }
+
+  .name { font-size:13px; }
+  .arabic { font-size:18px; }
+
+  .entry { width:110px; }
+
+  .ayah-input {
+    padding:9px 5px;
+    font-size:15px;
+  }
+
+  .mark-btn {
+    padding:6px 8px;
+    font-size:11px;
+  }
+
+  .progress-number { font-size:22px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="hero">
+    <div class="eyebrow">Qur’an Reading Tracker · 30th Juz</div>
+    <h1>Juz ‘Amma</h1>
+    <p class="subtitle">
+      Track your completed ayahs through all 37 surahs.
+    </p>
+  </div>
+</header>
+
+<main>
+
+  <!-- Overall Progress -->
+
+  <section class="panel progress-panel">
+
+    <div class="progress-top">
+
+      <div>
+        <div class="progress-label">Your progress</div>
+        <div class="progress-number" id="percent">0%</div>
+      </div>
+
+      <div style="text-align:right">
+        <div class="progress-number" id="count">0 / 37</div>
+        <div class="progress-label">Surahs completed</div>
+      </div>
+
+    </div>
+
+    <div class="track">
+      <div class="fill" id="bar"></div>
+    </div>
+
+    <div class="progress-foot">
+      <span id="remaining">37 remaining</span>
+      <span id="totalAyahs">0 / 564 Ayahs</span>
+    </div>
+
+  </section>
+
+  <!-- Search and Filter -->
+
+  <div class="toolbar">
+
+    <input
+      class="search"
+      id="search"
+      type="search"
+      placeholder="Search surah name or number..."
+    >
+
+    <select id="filter">
+      <option value="all">All surahs</option>
+      <option value="pending">Not completed</option>
+      <option value="progress">In progress</option>
+      <option value="done">Completed</option>
+    </select>
+
+    <button class="reset" id="reset" type="button">
+      Reset marks
+    </button>
+
+  </div>
+
+  <!-- Surah List -->
+
+  <section class="panel list">
+
+    <div class="list-head">
+      <span>Surah List · Juz 30</span>
+      <span>Completed Ayahs</span>
+    </div>
+
+    <div id="surahList"></div>
+
+  </section>
+
+  <footer>
+    Progress is automatically saved in your browser's LocalStorage.
+  </footer>
+
+</main>
+
+<script>
+
+// =====================================
+// SURAH DATA
+// =====================================
+
+const surahs = [
+[78,"An-Naba","النبأ",40],
+[79,"An-Nazi'at","النازعات",46],
+[80,"Abasa","عبس",42],
+[81,"At-Takwir","التكوير",29],
+[82,"Al-Infitar","الانفطار",19],
+[83,"Al-Mutaffifin","المطففين",36],
+[84,"Al-Inshiqaq","الانشقاق",25],
+[85,"Al-Buruj","البروج",22],
+[86,"At-Tariq","الطارق",17],
+[87,"Al-A'la","الأعلى",19],
+[88,"Al-Ghashiyah","الغاشية",26],
+[89,"Al-Fajr","الفجر",30],
+[90,"Al-Balad","البلد",20],
+[91,"Ash-Shams","الشمس",15],
+[92,"Al-Layl","الليل",21],
+[93,"Ad-Duha","الضحى",11],
+[94,"Ash-Sharh","الشرح",8],
+[95,"At-Tin","التين",8],
+[96,"Al-Alaq","العلق",19],
+[97,"Al-Qadr","القدر",5],
+[98,"Al-Bayyinah","البينة",8],
+[99,"Az-Zalzalah","الزلزلة",8],
+[100,"Al-Adiyat","العاديات",11],
+[101,"Al-Qari'ah","القارعة",11],
+[102,"At-Takathur","التكاثر",8],
+[103,"Al-Asr","العصر",3],
+[104,"Al-Humazah","الهمزة",9],
+[105,"Al-Fil","الفيل",5],
+[106,"Quraysh","قريش",4],
+[107,"Al-Ma'un","الماعون",7],
+[108,"Al-Kawthar","الكوثر",3],
+[109,"Al-Kafirun","الكافرون",6],
+[110,"An-Nasr","النصر",3],
+[111,"Al-Masad","المسد",5],
+[112,"Al-Ikhlas","الإخلاص",4],
+[113,"Al-Falaq","الفلق",5],
+[114,"An-Nas","الناس",6]
+];
+
+// =====================================
+// LOCAL STORAGE
+// =====================================
+
+const STORAGE_KEY = "juz-amma-ayah-progress-v1";
+
+function loadProgress() {
+
+  try {
+
+    const saved = JSON.parse(
+      localStorage.getItem(STORAGE_KEY) || "{}"
+    );
+
+    const clean = {};
+
+    surahs.forEach(s => {
+
+      const value = Number(saved[s[0]]);
+
+      if (
+        Number.isInteger(value) &&
+        value >= 0 &&
+        value <= s[3]
+      ) {
+        clean[s[0]] = value;
+      } else {
+        clean[s[0]] = 0;
+      }
+
+    });
+
+    return clean;
+
+  } catch (error) {
+
+    return {};
+
+  }
+
+}
+
+let completed = loadProgress();
+
+function saveProgress() {
+
+  try {
+
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(completed)
+    );
+
+  } catch (error) {
+
+    alert("Unable to save progress. Check browser storage.");
+
+  }
+
+}
+
+// =====================================
+// ELEMENTS
+// =====================================
+
+const list = document.getElementById("surahList");
+const search = document.getElementById("search");
+const filter = document.getElementById("filter");
+
+// =====================================
+// OVERALL PROGRESS
+// =====================================
+
+function updateProgress() {
+
+  const totalSurahs = surahs.length;
+
+  const completedSurahs = surahs.filter(
+    s => completed[s[0]] === s[3]
+  ).length;
+
+  const totalAyahs = surahs.reduce(
+    (sum, s) => sum + s[3], 0
+  );
+
+  const completedAyahs = surahs.reduce(
+    (sum, s) => sum + completed[s[0]], 0
+  );
+
+  const percentage = Math.round(
+    completedSurahs / totalSurahs * 100
+  );
+
+  document.getElementById("count").textContent =
+    `${completedSurahs} / ${totalSurahs}`;
+
+  document.getElementById("percent").textContent =
+    percentage + "%";
+
+  document.getElementById("bar").style.width =
+    percentage + "%";
+
+  document.getElementById("remaining").textContent =
+    `${totalSurahs - completedSurahs} remaining`;
+
+  document.getElementById("totalAyahs").textContent =
+    `${completedAyahs} / ${totalAyahs} Ayahs`;
+
+}
+
+// =====================================
+// RENDER SURAH LIST
+// =====================================
+
+function render() {
+
+  const query = search.value.trim().toLowerCase();
+  const mode = filter.value;
+
+  const visible = surahs.filter(s => {
+
+    const value = completed[s[0]];
+    const isDone = value === s[3];
+    const inProgress = value > 0 && !isDone;
+
+    const matches =
+      (s[0] + " " + s[1] + " " + s[2])
+      .toLowerCase()
+      .includes(query);
+
+    return matches &&
+      (
+        mode === "all" ||
+        (mode === "done" && isDone) ||
+        (mode === "progress" && inProgress) ||
+        (mode === "pending" && value === 0)
+      );
+
+  });
+
+  list.innerHTML = "";
+
+  if (!visible.length) {
+
+    list.innerHTML =
+      '<div class="empty">No surahs match your search.</div>';
+
+    updateProgress();
+    return;
+
+  }
+
+  visible.forEach(s => {
+
+    const [number, name, arabic, total] = s;
+
+    const value = completed[number];
+
+    const isDone = value === total;
+
+    const percentage = Math.round(
+      value / total * 100
+    );
+
+    const row = document.createElement("div");
+
+    row.className = "surah" + (
+      isDone ? " done" : ""
+    );
+
+    // Surah number
+
+    const num = document.createElement("span");
+
+    num.className = "number";
+    num.textContent = number;
+
+    // Details
+
+    const details = document.createElement("div");
+
+    details.className = "details";
+
+    const nameRow = document.createElement("div");
+
+    nameRow.className = "name-row";
+
+    const english = document.createElement("span");
+
+    english.className = "name";
+    english.textContent = name;
+
+    const ar = document.createElement("span");
+
+    ar.className = "arabic";
+    ar.lang = "ar";
+    ar.textContent = arabic;
+
+    nameRow.append(english, ar);
+
+    const meta = document.createElement("div");
+
+    meta.className = "meta";
+
+    meta.textContent = `Total ${total} Ayahs`;
+
+    // Individual progress bar
+
+    const progressTrack = document.createElement("div");
+
+    progressTrack.className = "surah-progress";
+
+    const progressFill = document.createElement("div");
+
+    progressFill.className = "surah-progress-fill";
+
+    progressFill.style.width = percentage + "%";
+
+    progressTrack.append(progressFill);
+
+    // Status
+
+    const status = document.createElement("div");
+
+    status.className = "status";
+
+    if (isDone) {
+
+      status.textContent = "✓ Fully Completed";
+      status.classList.add("done-text");
+
+    } else if (value > 0) {
+
+      status.textContent =
+        `${value} / ${total} Ayahs completed · ${percentage}%`;
+
+    } else {
+
+      status.textContent = "Not started";
+
+    }
+
+    details.append(
+      nameRow,
+      meta,
+      progressTrack,
+      status
+    );
+
+    // Ayah input + Mark button
+
+    const entry = document.createElement("div");
+
+    entry.className = "entry";
+
+    const ayahRow = document.createElement("div");
+    ayahRow.className = "ayah-row";
+
+    const input = document.createElement("input");
+
+    input.type = "number";
+    input.className = "ayah-input";
+    input.min = "0";
+    input.max = String(total);
+    input.step = "1";
+    input.inputMode = "numeric";
+    input.value = value;
+
+    input.setAttribute(
+      "aria-label",
+      `Completed Ayahs for ${name}, maximum ${total}`
+    );
+
+    input.title = `Enter a number from 0 to ${total}`;
+
+    // Mark button
+    const markBtn = document.createElement("button");
+    markBtn.type = "button";
+    markBtn.className = "mark-btn";
+    markBtn.textContent = "Mark";
+    markBtn.title = `Mark all ${total} Ayahs as completed`;
+
+    // Disable mark button if already completed
+    if (isDone) {
+      markBtn.disabled = true;
+    }
+
+    // Validate input before saving
+
+    input.addEventListener("input", () => {
+
+      const raw = input.value;
+
+      // Allow empty field while editing, but do not save it
+      if (raw === "") {
+        return;
+      }
+
+      const numberValue = Number(raw);
+
+      if (
+        !Number.isInteger(numberValue) ||
+        numberValue < 0 ||
+        numberValue > total
+      ) {
+
+        input.classList.add("invalid");
+
+        input.setCustomValidity(
+          `Enter a whole number between 0 and ${total}.`
+        );
+
+        input.reportValidity();
+
+        return;
+
+      }
+
+      input.classList.remove("invalid");
+      input.setCustomValidity("");
+
+      // Save this surah independently
+
+      completed[number] = numberValue;
+
+      saveProgress();
+
+      // Update progress without rebuilding input
+      updateRow();
+
+      // Toggle mark button state
+      markBtn.disabled = (numberValue === total);
+
+    });
+
+    // Restore empty input to previous saved value
+
+    input.addEventListener("blur", () => {
+
+      if (input.value === "") {
+
+        input.value = completed[number];
+
+      }
+
+      input.classList.remove("invalid");
+      input.setCustomValidity("");
+
+    });
+
+    // Mark button click handler
+    markBtn.addEventListener("click", () => {
+
+      const current = completed[number];
+
+      // Only mark if not already at total
+      if (current < total) {
+
+        completed[number] = total;
+
+        saveProgress();
+
+        // Update input field to reflect new value
+        input.value = total;
+
+        // Update row UI
+        updateRow();
+
+        // Disable button after marking
+        markBtn.disabled = true;
+
+      }
+
+    });
+
+    const inputLabel = document.createElement("div");
+
+    inputLabel.className = "input-label";
+
+    inputLabel.textContent = `/ ${total} Ayahs`;
+
+    ayahRow.append(input, markBtn);
+    entry.append(ayahRow, inputLabel);
+
+    // Update this row after input
+
+    function updateRow() {
+
+      const current = completed[number];
+
+      const currentPercentage = Math.round(
+        current / total * 100
+      );
+
+      const finished = current === total;
+
+      row.classList.toggle("done", finished);
+
+      progressFill.style.width =
+        currentPercentage + "%";
+
+      if (finished) {
+
+        status.textContent = "✓ Fully Completed";
+        status.classList.add("done-text");
+
+      } else if (current > 0) {
+
+        status.textContent =
+          `${current} / ${total} Ayahs completed · ${currentPercentage}%`;
+
+        status.classList.remove("done-text");
+
+      } else {
+
+        status.textContent = "Not started";
+        status.classList.remove("done-text");
+
+      }
+
+      // Ensure mark button state is consistent
+      markBtn.disabled = finished;
+
+      updateProgress();
+
+    }
+
+    row.append(num, details, entry);
+
+    list.append(row);
+
+  });
+
+  updateProgress();
+
+}
+
+// =====================================
+// SEARCH AND FILTER
+// =====================================
+
+search.addEventListener("input", render);
+
+filter.addEventListener("change", render);
+
+// =====================================
+// RESET ALL PROGRESS
+// =====================================
+
+document.getElementById("reset").addEventListener(
+  "click",
+  () => {
+
+    if (
+      confirm("Clear all completed Ayah progress for Juz 30?")
+    ) {
+
+      surahs.forEach(s => {
+        completed[s[0]] = 0;
+      });
+
+      saveProgress();
+
+      render();
+
+    }
+
+  }
+);
+
+// =====================================
+// INITIAL LOAD
+// =====================================
+
+render();
+
+</script>
+
+</body>
+</html>

@@ -20,6 +20,10 @@ const nextConfig = {
         source: '/aws-deploy',
         destination: '/aws-deploy-checklist.html',
       },
+       {
+        source: '/hifz',
+        destination: '/hifz.html',
+      },
     ];
   },
 };
