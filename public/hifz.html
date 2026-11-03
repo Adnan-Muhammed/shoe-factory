@@ -288,6 +288,26 @@ select,.reset {
   cursor:not-allowed;
 }
 
+/* Per-surah reset button */
+.row-reset {
+  border:1px solid #e4cfcf;
+  background:#fdf6f6;
+  color:#a04a42;
+  border-radius:8px;
+  padding:8px 9px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  line-height:1;
+  transition: background .15s, color .15s;
+}
+
+.row-reset:hover {
+  background:#a04a42;
+  color:#fff;
+  border-color:#a04a42;
+}
+
 .input-label {
   font-size:10px;
   color:var(--muted);
@@ -360,6 +380,13 @@ select,.reset {
   white-space: nowrap;
 }
 
+.points-max {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+}
+
 .empty {
   padding:35px;
   text-align:center;
@@ -407,6 +434,11 @@ footer {
   .mark-btn {
     padding:6px 8px;
     font-size:11px;
+  }
+
+  .row-reset {
+    padding:6px 7px;
+    font-size:12px;
   }
 
   .points-input {
@@ -480,8 +512,8 @@ footer {
       <option value="done">Completed</option>
     </select>
 
-    <button class="reset" id="reset" type="button">
-      Reset marks
+    <button class="reset" id="reset" type="button" title="Reset all surahs">
+      Reset all records
     </button>
 
   </div>
@@ -506,6 +538,12 @@ footer {
 </main>
 
 <script>
+
+// =====================================
+// CONFIGURATION
+// =====================================
+
+const MAX_MARKS_PER_SURAH = 20;   // total marks allowed per surah
 
 // =====================================
 // SURAH DATA
@@ -583,7 +621,11 @@ function loadProgress() {
         clean[s[0]] = { ayahs: 0, marks: 0 };
       }
 
-      if (Number.isInteger(marksValue) && marksValue >= 0) {
+      if (
+        Number.isInteger(marksValue) &&
+        marksValue >= 0 &&
+        marksValue <= MAX_MARKS_PER_SURAH
+      ) {
         clean[s[0]].marks = marksValue;
       }
 
@@ -775,7 +817,7 @@ function render() {
 
     details.append(nameRow, meta, progressTrack, status);
 
-    // Ayah input + Mark button
+    // Ayah input + Mark button + Reset button
     const entryDiv = document.createElement("div");
     entryDiv.className = "entry";
 
@@ -808,15 +850,8 @@ function render() {
       markBtn.disabled = true;
     }
 
-    // ---- AYAH INPUT: STRICT KEY-LEVEL PREVENTION ----
-    // Blocks any keystroke that would create a value > total.
-    // e.g. total=40, field="4", typing "3" -> blocked, stays "4".
-    // Typing "0" is allowed (yields "40" which is valid and = total).
-    // Clearing the field is allowed so the user can start fresh.
-
+    // ---- AYAH INPUT: STRICT KEY-LEVEL PREVENTION (max = total) ----
     input.addEventListener("keydown", (e) => {
-
-      // Always allow navigation / editing / modifier keys
       const allowedControlKeys = [
         "Backspace", "Delete", "Tab", "Escape", "Enter",
         "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
@@ -825,9 +860,7 @@ function render() {
       if (allowedControlKeys.includes(e.key)) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-      // Only consider single-character digit input
       if (e.key.length !== 1 || !/^\d$/.test(e.key)) {
-        // Non-digit single char: block it (keep numeric only)
         if (!/[\d]/.test(e.key)) {
           e.preventDefault();
         }
@@ -838,14 +871,11 @@ function render() {
       const selStart = input.selectionStart ?? currentVal.length;
       const selEnd = input.selectionEnd ?? currentVal.length;
 
-      // Build the value that WOULD result if this key is allowed
       const proposed =
         currentVal.slice(0, selStart) +
         e.key +
         currentVal.slice(selEnd);
 
-      // If proposed value exceeds total, BLOCK the keystroke.
-      // Empty string is fine (user cleared it).
       if (proposed !== "") {
         const proposedNum = Number(proposed);
         if (
@@ -857,28 +887,18 @@ function render() {
           return;
         }
       }
-
-      // Otherwise allow the keystroke (browser will update input,
-      // then our "input" handler below will save the value).
     });
 
-    // On any accepted input, save the value (already guaranteed <= total
-    // by the keydown guard, but we validate defensively too).
     input.addEventListener("input", () => {
-
       const raw = input.value;
-
-      if (raw === "") return; // user cleared field; don't save yet
+      if (raw === "") return;
 
       const numberValue = Number(raw);
-
       if (
         !Number.isInteger(numberValue) ||
         numberValue < 0 ||
         numberValue > total
       ) {
-        // Defensive: shouldn't happen because keydown blocked it,
-        // but handle paste / autofill just in case by reverting.
         input.value = completed[number].ayahs;
         return;
       }
@@ -889,8 +909,6 @@ function render() {
       markBtn.disabled = (numberValue === total);
     });
 
-    // On blur: if empty, restore last saved value.
-    // Do NOT silently convert 4 -> 40.
     input.addEventListener("blur", () => {
       if (input.value === "") {
         input.value = completed[number].ayahs;
@@ -899,7 +917,6 @@ function render() {
       input.setCustomValidity("");
     });
 
-    // Also guard against paste / drag-drop producing > total.
     input.addEventListener("paste", (e) => {
       const paste = (e.clipboardData || window.clipboardData)
         .getData("text")
@@ -920,11 +937,8 @@ function render() {
       }
     });
 
-    // Mark button click
     markBtn.addEventListener("click", () => {
-
       const current = completed[number].ayahs;
-
       if (current < total) {
         completed[number].ayahs = total;
         saveProgress();
@@ -932,16 +946,41 @@ function render() {
         updateRow();
         markBtn.disabled = true;
       }
+    });
 
+    // ---- PER-SURAH RESET BUTTON ----
+    const rowReset = document.createElement("button");
+    rowReset.type = "button";
+    rowReset.className = "row-reset";
+    rowReset.textContent = "↺";
+    rowReset.title = `Reset records for ${name}`;
+    rowReset.setAttribute("aria-label", `Reset records for ${name}`);
+
+    rowReset.addEventListener("click", () => {
+      if (
+        confirm(
+          `Reset all records for "${name}" (ayahs + marks)?`
+        )
+      ) {
+        completed[number].ayahs = 0;
+        completed[number].marks = 0;
+        saveProgress();
+
+        // Update this row in place (no full re-render needed)
+        input.value = 0;
+        pointsInput.value = 0;
+        markBtn.disabled = false;
+        updateRow();
+      }
     });
 
     const inputLabel = document.createElement("div");
     inputLabel.className = "input-label";
     inputLabel.textContent = `/ ${total} Ayahs`;
 
-    ayahRow.append(input, markBtn);
+    ayahRow.append(input, markBtn, rowReset);
 
-    // ---- MARKS / POINTS INPUT ----
+    // ---- MARKS / POINTS INPUT (max = 20) ----
     const pointsRow = document.createElement("div");
     pointsRow.className = "points-row";
 
@@ -949,32 +988,73 @@ function render() {
     pointsInput.type = "number";
     pointsInput.className = "points-input";
     pointsInput.min = "0";
+    pointsInput.max = String(MAX_MARKS_PER_SURAH);
     pointsInput.step = "1";
     pointsInput.inputMode = "numeric";
     pointsInput.value = currentMarks;
     pointsInput.placeholder = "Marks";
-    pointsInput.title = "Record marks/points for this surah";
+    pointsInput.title = `Record marks/points for this surah (0–${MAX_MARKS_PER_SURAH})`;
 
     pointsInput.setAttribute(
       "aria-label",
-      `Marks or points for ${name}`
+      `Marks or points for ${name}, maximum ${MAX_MARKS_PER_SURAH}`
     );
+
+    // Strict key-level prevention: block any keystroke that would exceed 20
+    pointsInput.addEventListener("keydown", (e) => {
+      const allowedControlKeys = [
+        "Backspace", "Delete", "Tab", "Escape", "Enter",
+        "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+        "Home", "End"
+      ];
+      if (allowedControlKeys.includes(e.key)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      if (e.key.length !== 1 || !/^\d$/.test(e.key)) {
+        if (!/[\d]/.test(e.key)) {
+          e.preventDefault();
+        }
+        return;
+      }
+
+      const currentVal = pointsInput.value;
+      const selStart = pointsInput.selectionStart ?? currentVal.length;
+      const selEnd = pointsInput.selectionEnd ?? currentVal.length;
+
+      const proposed =
+        currentVal.slice(0, selStart) +
+        e.key +
+        currentVal.slice(selEnd);
+
+      if (proposed !== "") {
+        const proposedNum = Number(proposed);
+        if (
+          !Number.isInteger(proposedNum) ||
+          proposedNum < 0 ||
+          proposedNum > MAX_MARKS_PER_SURAH
+        ) {
+          e.preventDefault();
+          return;
+        }
+      }
+    });
 
     pointsInput.addEventListener("input", () => {
       const raw = pointsInput.value;
       if (raw === "") return;
 
       const numVal = Number(raw);
-      if (!Number.isInteger(numVal) || numVal < 0) {
-        pointsInput.classList.add("invalid");
-        pointsInput.setCustomValidity("Enter a whole number (0 or more).");
-        pointsInput.reportValidity();
+      if (
+        !Number.isInteger(numVal) ||
+        numVal < 0 ||
+        numVal > MAX_MARKS_PER_SURAH
+      ) {
+        pointsInput.value = completed[number].marks;
         return;
       }
 
       pointsInput.classList.remove("invalid");
       pointsInput.setCustomValidity("");
-
       completed[number].marks = numVal;
       saveProgress();
     });
@@ -987,17 +1067,43 @@ function render() {
       pointsInput.setCustomValidity("");
     });
 
+    pointsInput.addEventListener("paste", (e) => {
+      const paste = (e.clipboardData || window.clipboardData)
+        .getData("text")
+        .trim();
+      if (!/^\d+$/.test(paste)) {
+        e.preventDefault();
+        return;
+      }
+      const currentVal = pointsInput.value;
+      const selStart = pointsInput.selectionStart ?? currentVal.length;
+      const selEnd = pointsInput.selectionEnd ?? currentVal.length;
+      const proposed =
+        currentVal.slice(0, selStart) +
+        paste +
+        currentVal.slice(selEnd);
+      if (
+        proposed !== "" &&
+        Number(proposed) > MAX_MARKS_PER_SURAH
+      ) {
+        e.preventDefault();
+      }
+    });
+
     const pointsLabel = document.createElement("div");
     pointsLabel.className = "points-label";
     pointsLabel.textContent = "Marks";
 
-    pointsRow.append(pointsInput, pointsLabel);
+    const pointsMax = document.createElement("div");
+    pointsMax.className = "points-max";
+    pointsMax.textContent = `/ ${MAX_MARKS_PER_SURAH}`;
+
+    pointsRow.append(pointsInput, pointsLabel, pointsMax);
 
     entryDiv.append(ayahRow, inputLabel, pointsRow);
 
     // ---- UPDATE ROW (ayah progress) ----
     function updateRow() {
-
       const current = completed[number].ayahs;
       const currentPercentage = Math.round(
         current / total * 100
@@ -1040,7 +1146,7 @@ search.addEventListener("input", render);
 filter.addEventListener("change", render);
 
 // =====================================
-// RESET ALL PROGRESS
+// RESET ALL PROGRESS (global)
 // =====================================
 
 document.getElementById("reset").addEventListener(
@@ -1048,7 +1154,9 @@ document.getElementById("reset").addEventListener(
   () => {
 
     if (
-      confirm("Clear all completed Ayah progress AND marks for Juz 30?")
+      confirm(
+        "⚠️ Clear ALL records for every surah (ayahs + marks)?\n\nThis cannot be undone."
+      )
     ) {
 
       surahs.forEach(s => {
