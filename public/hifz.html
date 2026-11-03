@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#102b25">
 <title>Juz 30 — Amma Juz Tracker</title>
-
 <style>
 :root {
   --bg:#f4f6f2;
@@ -321,6 +320,46 @@ select,.reset {
   font-weight:700;
 }
 
+/* --- Marks / points --- */
+.points-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+}
+
+.points-input {
+  width: 100%;
+  padding: 7px 6px;
+  border: 1px solid #dce5de;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  color: #2a5c4a;
+  outline: none;
+  background: #f9fcf9;
+  min-width: 0;
+}
+
+.points-input:focus {
+  border-color: var(--green);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px #176b5010;
+}
+
+.points-input.invalid {
+  border-color: #d64545;
+  background: #fff5f5;
+}
+
+.points-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+}
+
 .empty {
   padding:35px;
   text-align:center;
@@ -370,6 +409,11 @@ footer {
     font-size:11px;
   }
 
+  .points-input {
+    padding: 5px 4px;
+    font-size: 12px;
+  }
+
   .progress-number { font-size:22px; }
 }
 </style>
@@ -382,7 +426,7 @@ footer {
     <div class="eyebrow">Qur’an Reading Tracker · 30th Juz</div>
     <h1>Nafeesu Juzu Hifz tracker</h1>
     <p class="subtitle">
-      Track your completed ayahs through all 37 surahs.
+      Track your completed ayahs and marks through all 37 surahs.
     </p>
   </div>
 </header>
@@ -399,27 +443,22 @@ footer {
         <div class="progress-label">Your progress</div>
         <div class="progress-number" id="percent">0%</div>
       </div>
-</header>
 
       <div style="text-align:right">
         <div class="progress-number" id="count">0 / 37</div>
         <div class="progress-label">Surahs completed</div>
       </div>
-</header>
 
     </div>
-</header>
 
     <div class="track">
       <div class="fill" id="bar"></div>
     </div>
-</header>
 
     <div class="progress-foot">
       <span id="remaining">37 remaining</span>
       <span id="totalAyahs">0 / 564 Ayahs</span>
     </div>
-</header>
 
   </section>
 
@@ -446,7 +485,6 @@ footer {
     </button>
 
   </div>
-</header>
 
   <!-- Surah List -->
 
@@ -454,9 +492,8 @@ footer {
 
     <div class="list-head">
       <span>Surah List · Juz 30</span>
-      <span>Completed Ayahs</span>
+      <span>Completed Ayahs / Marks</span>
     </div>
-</header>
 
     <div id="surahList"></div>
 
@@ -515,10 +552,10 @@ const surahs = [
 ];
 
 // =====================================
-// LOCAL STORAGE
+// LOCAL STORAGE (ayahs + marks)
 // =====================================
 
-const STORAGE_KEY = "juz-amma-ayah-progress-v1";
+const STORAGE_KEY = "juz-amma-ayah-progress-v2";
 
 function loadProgress() {
 
@@ -532,16 +569,22 @@ function loadProgress() {
 
     surahs.forEach(s => {
 
-      const value = Number(saved[s[0]]);
+      const entry = saved[s[0]] || {};
+      const ayahValue = Number(entry.ayahs);
+      const marksValue = Number(entry.marks);
 
       if (
-        Number.isInteger(value) &&
-        value >= 0 &&
-        value <= s[3]
+        Number.isInteger(ayahValue) &&
+        ayahValue >= 0 &&
+        ayahValue <= s[3]
       ) {
-        clean[s[0]] = value;
+        clean[s[0]] = { ayahs: ayahValue, marks: 0 };
       } else {
-        clean[s[0]] = 0;
+        clean[s[0]] = { ayahs: 0, marks: 0 };
+      }
+
+      if (Number.isInteger(marksValue) && marksValue >= 0) {
+        clean[s[0]].marks = marksValue;
       }
 
     });
@@ -550,7 +593,11 @@ function loadProgress() {
 
   } catch (error) {
 
-    return {};
+    const clean = {};
+    surahs.forEach(s => {
+      clean[s[0]] = { ayahs: 0, marks: 0 };
+    });
+    return clean;
 
   }
 
@@ -559,20 +606,11 @@ function loadProgress() {
 let completed = loadProgress();
 
 function saveProgress() {
-
   try {
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(completed)
-    );
-
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
   } catch (error) {
-
     alert("Unable to save progress. Check browser storage.");
-
   }
-
 }
 
 // =====================================
@@ -592,7 +630,7 @@ function updateProgress() {
   const totalSurahs = surahs.length;
 
   const completedSurahs = surahs.filter(
-    s => completed[s[0]] === s[3]
+    s => completed[s[0]].ayahs === s[3]
   ).length;
 
   const totalAyahs = surahs.reduce(
@@ -600,7 +638,7 @@ function updateProgress() {
   );
 
   const completedAyahs = surahs.reduce(
-    (sum, s) => sum + completed[s[0]], 0
+    (sum, s) => sum + completed[s[0]].ayahs, 0
   );
 
   const percentage = Math.round(
@@ -635,7 +673,8 @@ function render() {
 
   const visible = surahs.filter(s => {
 
-    const value = completed[s[0]];
+    const entry = completed[s[0]];
+    const value = entry.ayahs;
     const isDone = value === s[3];
     const inProgress = value > 0 && !isDone;
 
@@ -657,20 +696,19 @@ function render() {
   list.innerHTML = "";
 
   if (!visible.length) {
-
     list.innerHTML =
       '<div class="empty">No surahs match your search.</div>';
-
     updateProgress();
     return;
-
   }
 
   visible.forEach(s => {
 
     const [number, name, arabic, total] = s;
 
-    const value = completed[number];
+    const entry = completed[number];
+    const value = entry.ayahs;
+    const currentMarks = entry.marks;
 
     const isDone = value === total;
 
@@ -685,29 +723,22 @@ function render() {
     );
 
     // Surah number
-
     const num = document.createElement("span");
-
     num.className = "number";
     num.textContent = number;
 
     // Details
-
     const details = document.createElement("div");
-
     details.className = "details";
 
     const nameRow = document.createElement("div");
-
     nameRow.className = "name-row";
 
     const english = document.createElement("span");
-
     english.className = "name";
     english.textContent = name;
 
     const ar = document.createElement("span");
-
     ar.className = "arabic";
     ar.lang = "ar";
     ar.textContent = arabic;
@@ -715,65 +746,43 @@ function render() {
     nameRow.append(english, ar);
 
     const meta = document.createElement("div");
-
     meta.className = "meta";
-
     meta.textContent = `Total ${total} Ayahs`;
 
     // Individual progress bar
-
     const progressTrack = document.createElement("div");
-
     progressTrack.className = "surah-progress";
 
     const progressFill = document.createElement("div");
-
     progressFill.className = "surah-progress-fill";
-
     progressFill.style.width = percentage + "%";
 
     progressTrack.append(progressFill);
 
     // Status
-
     const status = document.createElement("div");
-
     status.className = "status";
 
     if (isDone) {
-
       status.textContent = "✓ Fully Completed";
       status.classList.add("done-text");
-
     } else if (value > 0) {
-
       status.textContent =
         `${value} / ${total} Ayahs completed · ${percentage}%`;
-
     } else {
-
       status.textContent = "Not started";
-
     }
 
-    details.append(
-      nameRow,
-      meta,
-      progressTrack,
-      status
-    );
+    details.append(nameRow, meta, progressTrack, status);
 
     // Ayah input + Mark button
-
-    const entry = document.createElement("div");
-
-    entry.className = "entry";
+    const entryDiv = document.createElement("div");
+    entryDiv.className = "entry";
 
     const ayahRow = document.createElement("div");
     ayahRow.className = "ayah-row";
 
     const input = document.createElement("input");
-
     input.type = "number";
     input.className = "ayah-input";
     input.min = "0";
@@ -786,7 +795,6 @@ function render() {
       "aria-label",
       `Completed Ayahs for ${name}, maximum ${total}`
     );
-
     input.title = `Enter a number from 0 to ${total}`;
 
     // Mark button
@@ -796,21 +804,71 @@ function render() {
     markBtn.textContent = "Mark";
     markBtn.title = `Mark all ${total} Ayahs as completed`;
 
-    // Disable mark button if already completed
     if (isDone) {
       markBtn.disabled = true;
     }
 
-    // Validate input before saving
+    // ---- AYAH INPUT: STRICT KEY-LEVEL PREVENTION ----
+    // Blocks any keystroke that would create a value > total.
+    // e.g. total=40, field="4", typing "3" -> blocked, stays "4".
+    // Typing "0" is allowed (yields "40" which is valid and = total).
+    // Clearing the field is allowed so the user can start fresh.
 
+    input.addEventListener("keydown", (e) => {
+
+      // Always allow navigation / editing / modifier keys
+      const allowedControlKeys = [
+        "Backspace", "Delete", "Tab", "Escape", "Enter",
+        "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+        "Home", "End"
+      ];
+      if (allowedControlKeys.includes(e.key)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      // Only consider single-character digit input
+      if (e.key.length !== 1 || !/^\d$/.test(e.key)) {
+        // Non-digit single char: block it (keep numeric only)
+        if (!/[\d]/.test(e.key)) {
+          e.preventDefault();
+        }
+        return;
+      }
+
+      const currentVal = input.value;
+      const selStart = input.selectionStart ?? currentVal.length;
+      const selEnd = input.selectionEnd ?? currentVal.length;
+
+      // Build the value that WOULD result if this key is allowed
+      const proposed =
+        currentVal.slice(0, selStart) +
+        e.key +
+        currentVal.slice(selEnd);
+
+      // If proposed value exceeds total, BLOCK the keystroke.
+      // Empty string is fine (user cleared it).
+      if (proposed !== "") {
+        const proposedNum = Number(proposed);
+        if (
+          !Number.isInteger(proposedNum) ||
+          proposedNum < 0 ||
+          proposedNum > total
+        ) {
+          e.preventDefault();
+          return;
+        }
+      }
+
+      // Otherwise allow the keystroke (browser will update input,
+      // then our "input" handler below will save the value).
+    });
+
+    // On any accepted input, save the value (already guaranteed <= total
+    // by the keydown guard, but we validate defensively too).
     input.addEventListener("input", () => {
 
       const raw = input.value;
 
-      // Allow empty field while editing, but do not save it
-      if (raw === "") {
-        return;
-      }
+      if (raw === "") return; // user cleared field; don't save yet
 
       const numberValue = Number(raw);
 
@@ -819,130 +877,153 @@ function render() {
         numberValue < 0 ||
         numberValue > total
       ) {
-
-        input.classList.add("invalid");
-
-        input.setCustomValidity(
-          `Enter a whole number between 0 and ${total}.`
-        );
-
-        input.reportValidity();
-
+        // Defensive: shouldn't happen because keydown blocked it,
+        // but handle paste / autofill just in case by reverting.
+        input.value = completed[number].ayahs;
         return;
-
       }
 
-      input.classList.remove("invalid");
-      input.setCustomValidity("");
-
-      // Save this surah independently
-
-      completed[number] = numberValue;
-
+      completed[number].ayahs = numberValue;
       saveProgress();
-
-      // Update progress without rebuilding input
       updateRow();
-
-      // Toggle mark button state
       markBtn.disabled = (numberValue === total);
-
     });
 
-    // Restore empty input to previous saved value
-
+    // On blur: if empty, restore last saved value.
+    // Do NOT silently convert 4 -> 40.
     input.addEventListener("blur", () => {
-
       if (input.value === "") {
-
-        input.value = completed[number];
-
+        input.value = completed[number].ayahs;
       }
-
       input.classList.remove("invalid");
       input.setCustomValidity("");
-
     });
 
-    // Mark button click handler
+    // Also guard against paste / drag-drop producing > total.
+    input.addEventListener("paste", (e) => {
+      const paste = (e.clipboardData || window.clipboardData)
+        .getData("text")
+        .trim();
+      if (!/^\d+$/.test(paste)) {
+        e.preventDefault();
+        return;
+      }
+      const currentVal = input.value;
+      const selStart = input.selectionStart ?? currentVal.length;
+      const selEnd = input.selectionEnd ?? currentVal.length;
+      const proposed =
+        currentVal.slice(0, selStart) +
+        paste +
+        currentVal.slice(selEnd);
+      if (proposed !== "" && Number(proposed) > total) {
+        e.preventDefault();
+      }
+    });
+
+    // Mark button click
     markBtn.addEventListener("click", () => {
 
-      const current = completed[number];
+      const current = completed[number].ayahs;
 
-      // Only mark if not already at total
       if (current < total) {
-
-        completed[number] = total;
-
+        completed[number].ayahs = total;
         saveProgress();
-
-        // Update input field to reflect new value
         input.value = total;
-
-        // Update row UI
         updateRow();
-
-        // Disable button after marking
         markBtn.disabled = true;
-
       }
 
     });
 
     const inputLabel = document.createElement("div");
-
     inputLabel.className = "input-label";
-
     inputLabel.textContent = `/ ${total} Ayahs`;
 
     ayahRow.append(input, markBtn);
-    entry.append(ayahRow, inputLabel);
 
-    // Update this row after input
+    // ---- MARKS / POINTS INPUT ----
+    const pointsRow = document.createElement("div");
+    pointsRow.className = "points-row";
 
+    const pointsInput = document.createElement("input");
+    pointsInput.type = "number";
+    pointsInput.className = "points-input";
+    pointsInput.min = "0";
+    pointsInput.step = "1";
+    pointsInput.inputMode = "numeric";
+    pointsInput.value = currentMarks;
+    pointsInput.placeholder = "Marks";
+    pointsInput.title = "Record marks/points for this surah";
+
+    pointsInput.setAttribute(
+      "aria-label",
+      `Marks or points for ${name}`
+    );
+
+    pointsInput.addEventListener("input", () => {
+      const raw = pointsInput.value;
+      if (raw === "") return;
+
+      const numVal = Number(raw);
+      if (!Number.isInteger(numVal) || numVal < 0) {
+        pointsInput.classList.add("invalid");
+        pointsInput.setCustomValidity("Enter a whole number (0 or more).");
+        pointsInput.reportValidity();
+        return;
+      }
+
+      pointsInput.classList.remove("invalid");
+      pointsInput.setCustomValidity("");
+
+      completed[number].marks = numVal;
+      saveProgress();
+    });
+
+    pointsInput.addEventListener("blur", () => {
+      if (pointsInput.value === "") {
+        pointsInput.value = completed[number].marks;
+      }
+      pointsInput.classList.remove("invalid");
+      pointsInput.setCustomValidity("");
+    });
+
+    const pointsLabel = document.createElement("div");
+    pointsLabel.className = "points-label";
+    pointsLabel.textContent = "Marks";
+
+    pointsRow.append(pointsInput, pointsLabel);
+
+    entryDiv.append(ayahRow, inputLabel, pointsRow);
+
+    // ---- UPDATE ROW (ayah progress) ----
     function updateRow() {
 
-      const current = completed[number];
-
+      const current = completed[number].ayahs;
       const currentPercentage = Math.round(
         current / total * 100
       );
-
       const finished = current === total;
 
       row.classList.toggle("done", finished);
-
-      progressFill.style.width =
-        currentPercentage + "%";
+      progressFill.style.width = currentPercentage + "%";
 
       if (finished) {
-
         status.textContent = "✓ Fully Completed";
         status.classList.add("done-text");
-
       } else if (current > 0) {
-
         status.textContent =
           `${current} / ${total} Ayahs completed · ${currentPercentage}%`;
-
         status.classList.remove("done-text");
-
       } else {
-
         status.textContent = "Not started";
         status.classList.remove("done-text");
-
       }
 
-      // Ensure mark button state is consistent
       markBtn.disabled = finished;
-
       updateProgress();
-
     }
 
-    row.append(num, details, entry);
-
+    row.append(num, details, entryDiv);
     list.append(row);
 
   });
@@ -956,7 +1037,6 @@ function render() {
 // =====================================
 
 search.addEventListener("input", render);
-
 filter.addEventListener("change", render);
 
 // =====================================
@@ -968,15 +1048,15 @@ document.getElementById("reset").addEventListener(
   () => {
 
     if (
-      confirm("Clear all completed Ayah progress for Juz 30?")
+      confirm("Clear all completed Ayah progress AND marks for Juz 30?")
     ) {
 
       surahs.forEach(s => {
-        completed[s[0]] = 0;
+        completed[s[0]].ayahs = 0;
+        completed[s[0]].marks = 0;
       });
 
       saveProgress();
-
       render();
 
     }
