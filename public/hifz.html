@@ -178,6 +178,15 @@ select,.reset {
 
 .surah.done { background:#f4faf6; }
 
+/* Left column: reset button stacked above surah number */
+.left-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
 .number {
   width:36px;
   height:36px;
@@ -294,11 +303,12 @@ select,.reset {
   background:#fdf6f6;
   color:#a04a42;
   border-radius:8px;
-  padding:8px 9px;
+  padding:6px 9px;
   font-size:13px;
   font-weight:700;
   cursor:pointer;
   line-height:1;
+  flex:0 0 auto;
   transition: background .15s, color .15s;
 }
 
@@ -437,7 +447,7 @@ footer {
   }
 
   .row-reset {
-    padding:6px 7px;
+    padding:5px 7px;
     font-size:12px;
   }
 
@@ -543,7 +553,7 @@ footer {
 // CONFIGURATION
 // =====================================
 
-const MAX_MARKS_PER_SURAH = 20;   // total marks allowed per surah
+const MAX_MARKS_PER_SURAH = 20;
 
 // =====================================
 // SURAH DATA
@@ -590,7 +600,7 @@ const surahs = [
 ];
 
 // =====================================
-// LOCAL STORAGE (ayahs + marks)
+// LOCAL STORAGE
 // =====================================
 
 const STORAGE_KEY = "juz-amma-ayah-progress-v2";
@@ -764,10 +774,22 @@ function render() {
       isDone ? " done" : ""
     );
 
-    // Surah number
+    // ---- LEFT STACK: reset button on top, number below (vertical) ----
+    const leftStack = document.createElement("div");
+    leftStack.className = "left-stack";
+
+    const rowReset = document.createElement("button");
+    rowReset.type = "button";
+    rowReset.className = "row-reset";
+    rowReset.textContent = "↺";
+    rowReset.title = `Reset records for ${name}`;
+    rowReset.setAttribute("aria-label", `Reset records for ${name}`);
+
     const num = document.createElement("span");
     num.className = "number";
     num.textContent = number;
+
+    leftStack.append(rowReset, num);
 
     // Details
     const details = document.createElement("div");
@@ -817,7 +839,7 @@ function render() {
 
     details.append(nameRow, meta, progressTrack, status);
 
-    // Ayah input + Mark button + Reset button
+    // Ayah input + Mark button
     const entryDiv = document.createElement("div");
     entryDiv.className = "entry";
 
@@ -839,7 +861,6 @@ function render() {
     );
     input.title = `Enter a number from 0 to ${total}`;
 
-    // Mark button
     const markBtn = document.createElement("button");
     markBtn.type = "button";
     markBtn.className = "mark-btn";
@@ -850,7 +871,7 @@ function render() {
       markBtn.disabled = true;
     }
 
-    // ---- AYAH INPUT: STRICT KEY-LEVEL PREVENTION (max = total) ----
+    // ---- AYAH INPUT: STRICT KEY-LEVEL PREVENTION ----
     input.addEventListener("keydown", (e) => {
       const allowedControlKeys = [
         "Backspace", "Delete", "Tab", "Escape", "Enter",
@@ -948,37 +969,11 @@ function render() {
       }
     });
 
-    // ---- PER-SURAH RESET BUTTON ----
-    const rowReset = document.createElement("button");
-    rowReset.type = "button";
-    rowReset.className = "row-reset";
-    rowReset.textContent = "↺";
-    rowReset.title = `Reset records for ${name}`;
-    rowReset.setAttribute("aria-label", `Reset records for ${name}`);
-
-    rowReset.addEventListener("click", () => {
-      if (
-        confirm(
-          `Reset all records for "${name}" (ayahs + marks)?`
-        )
-      ) {
-        completed[number].ayahs = 0;
-        completed[number].marks = 0;
-        saveProgress();
-
-        // Update this row in place (no full re-render needed)
-        input.value = 0;
-        pointsInput.value = 0;
-        markBtn.disabled = false;
-        updateRow();
-      }
-    });
-
     const inputLabel = document.createElement("div");
     inputLabel.className = "input-label";
     inputLabel.textContent = `/ ${total} Ayahs`;
 
-    ayahRow.append(input, markBtn, rowReset);
+    ayahRow.append(input, markBtn);
 
     // ---- MARKS / POINTS INPUT (max = 20) ----
     const pointsRow = document.createElement("div");
@@ -1000,7 +995,6 @@ function render() {
       `Marks or points for ${name}, maximum ${MAX_MARKS_PER_SURAH}`
     );
 
-    // Strict key-level prevention: block any keystroke that would exceed 20
     pointsInput.addEventListener("keydown", (e) => {
       const allowedControlKeys = [
         "Backspace", "Delete", "Tab", "Escape", "Enter",
@@ -1102,7 +1096,7 @@ function render() {
 
     entryDiv.append(ayahRow, inputLabel, pointsRow);
 
-    // ---- UPDATE ROW (ayah progress) ----
+    // ---- UPDATE ROW ----
     function updateRow() {
       const current = completed[number].ayahs;
       const currentPercentage = Math.round(
@@ -1129,7 +1123,26 @@ function render() {
       updateProgress();
     }
 
-    row.append(num, details, entryDiv);
+    // Reset handler
+    rowReset.addEventListener("click", () => {
+      if (
+        confirm(
+          `Reset all records for "${name}" (ayahs + marks)?`
+        )
+      ) {
+        completed[number].ayahs = 0;
+        completed[number].marks = 0;
+        saveProgress();
+
+        input.value = 0;
+        pointsInput.value = 0;
+        markBtn.disabled = false;
+        updateRow();
+      }
+    });
+
+    // Row order: left stack (reset above number), details, entry
+    row.append(leftStack, details, entryDiv);
     list.append(row);
 
   });
@@ -1146,7 +1159,7 @@ search.addEventListener("input", render);
 filter.addEventListener("change", render);
 
 // =====================================
-// RESET ALL PROGRESS (global)
+// RESET ALL PROGRESS
 // =====================================
 
 document.getElementById("reset").addEventListener(
